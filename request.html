@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f7f7f7;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1, h2, h3 {
+            color: #2C3E50;
+        }
+
+        /* Container Styles */
+        .container {
+            width: 90%;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Section Styles */
+        section {
+            margin-bottom: 30px;
+        }
+
+        section h2 {
+            margin-top: 0;
+            font-size: 24px;
+            border-bottom: 2px solid #2C3E50;
+            padding-bottom: 5px;
+        }
+
+        section h3 {
+            margin-top: 0;
+            font-size: 20px;
+            color: #34495E;
+        }
+
+        /* Code Block Styles */
+        pre {
+            background-color: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: "Courier New", Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            border: 1px solid #ccc;
+            color: #2C3E50;
+        }
+
+        code {
+            font-family: "Courier New", Courier, monospace;
+            color: #2980B9;
+        }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        table th, table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #2C3E50;
+            color: #fff;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        /* Button Style */
+        .btn {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #3498DB;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background-color: #2980B9;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                width: 100%;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>API Documentation</h1>
+
+    <section>
+        <h2>1. Benutzerregistrierung (Administrator)</h2>
+
+        <h3>Request</h3>
+        <pre>
+POST /api/users
+Content-Type: application/json
+Authorization: Bearer {admin_token}
+
+{
+  "firstName": "Max",
+  "lastName": "Mustermann",
+  "email": "max.mustermann@beispiel.de",
+  "password": "sicheres_passwort123",
+  "role": "admin"  // oder "employee" für Mitarbeiter
+}
+            </pre>
+
+        <h3>Response (Erfolg)</h3>
+        <pre>
+HTTP/1.1 201 Created
+{
+  "status": "success",
+  "message": "Benutzerkonto erfolgreich erstellt",
+  "userId": "12345",
+  "userDetails": {
+    "firstName": "Max",
+    "lastName": "Mustermann",
+    "password": "sicheres_passwort123",
+    "email": "max.mustermann@beispiel.de",
+    "role": "admin"
+  }
+}
+            </pre>
+
+        <h3>Response (Fehler)</h3>
+        <pre>
+HTTP/1.1 400 Bad Request
+{
+  "status": "error",
+  "message": "E-Mail-Adresse bereits vergeben"
+}
+            </pre>
+    </section>
+
+    <section>
+        <h2>2. Mitarbeiter einloggen</h2>
+
+        <h3>Request</h3>
+        <pre>
+POST /api/auth/login
+Content-Type: application/json
+
+{
+  "email": "mitarbeiter@beispiel.de",
+  "password": "mitarbeiter_passwort"
+}
+            </pre>
+
+        <h3>Response (Erfolg)</h3>
+        <pre>
+HTTP/1.1 200 OK
+{
+  "status": "success",
+  "message": "Login erfolgreich",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "userId": "67890",
+    "firstName": "Anna",
+    "lastName": "Schmidt",
+    "role": "employee"
+  }
+}
+            </pre>
+
+        <h3>Response (Fehler)</h3>
+        <pre>
+HTTP/1.1 401 Unauthorized
+{
+  "status": "error",
+  "message": "Ungültige Anmeldedaten"
+}
+            </pre>
+    </section>
+
+    <section>
+        <h2>3. Handybestellung entgegennehmen</h2>
+
+        <h3>Request</h3>
+        <pre>
+POST /api/orders
+Content-Type: application/json
+Authorization: Bearer {employee_token}
+
+{
+  "phoneId": "P12345",
+  "branchId": "B789",
+  "quantity": 5
+}
+            </pre>
+
+        <h3>Response (Erfolg)</h3>
+        <pre>
+HTTP/1.1 201 Created
+{
+  "status": "success",
+  "message": "Bestellung erfolgreich erstellt",
+  "orderId": "O98765",
+  "orderDetails": {
+    "phoneId": "P12345",
+    "phoneName": "Smartphone XYZ",
+    "branchId": "B789",
+    "branchName": "Filiale Berlin-Mitte",
+    "quantity": 5,
+    "orderDate": "2025-04-10T10:30:00"
+  }
+}
+            </pre>
+    </section>
+
+    <section>
+        <h2>4. Handys ins Lager einbuchen</h2>
+
+        <h3>Request</h3>
+        <pre>
+POST /api/inventory/add
+Content-Type: application/json
+Authorization: Bearer {employee_token}
+
+{
+  "phoneId": "P12345",
+  "quantity": 20,
+  "warehouseId": "W456"
+}
+            </pre>
+
+        <h3>Response (Erfolg)</h3>
+        <pre>
+HTTP/1.1 200 OK
+{
+  "status": "success",
+  "message": "Handys erfolgreich ins Lager eingebucht",
+  "inventoryUpdate": {
+    "phoneId": "P12345",
+    "phoneName": "Smartphone XYZ",
+    "previousQuantity": 15,
+    "addedQuantity": 20,
+    "currentQuantity": 35,
+    "warehouseId": "W456",
+    "warehouseName": "Hauptlager Nord",
+    "receivedDate": "2025-04-10T14:15:00"
+  }
+}
+            </pre>
+    </section>
+
+    <section>
+        <h2>5. Lagerbestand anzeigen (Es fehlt punkt 2 & 3)</h2>
+
+        <h3>Request</h3>
+        <pre>
+GET /api/inventory
+Authorization: Bearer {admin_token}
+            </pre>
+
+        <h3>Response</h3>
+        <pre>
+HTTP/1.1 200 OK
+{
+  "status": "success",
+  "inventory": [
+    {
+      "phoneId": "P12345",
+      "phoneName": "Smartphone XYZ",
+      "quantity": 35,
+      "warehouseId": "W456",
+      "warehouseName": "Hauptlager Nord",
+      "lastUpdated": "2025-04-10T14:15:00"
+    },
+    {
+      "phoneId": "P23456",
+      "phoneName": "Smartphone ABC",
+      "quantity": 42,
+      "warehouseId": "W456",
+      "warehouseName": "Hauptlager Nord",
+      "lastUpdated": "2025-04-09T09:30:00"
+    }
+  ]
+}
+            </pre>
+    </section>
+
+    <section>
+        <h2>6. Neue Filiale hinzufügen (Es fehlt punkt 2 & 3) </h2>
+
+        <h3>Request</h3>
+        <pre>
+POST /api/branches
+Content-Type: application/json
+Authorization: Bearer {admin_token}
+
+{
+  "name": "Filiale Hamburg-Altona",
+  "address": {
+    "street": "Altonaer Straße 123",
+    "postalCode": "22765",
+    "city": "Hamburg"
+  },
+  "phoneNumber": "+49 40 123456789",
+  "email": "filiale.altona@beispiel.de"
+}
+            </pre>
+
+        <h3>Response (Erfolg)</h3>
+        <pre>
+HTTP/1.1 201 Created
+{
+  "status": "success",
+  "message": "Filiale erfolgreich erstellt",
+  "branchId": "B790",
+  "branchDetails": {
+    "name": "Filiale Hamburg-Altona",
+    "address": {
+      "street": "Altonaer Straße 123",
+      "postalCode": "22765",
+      "city": "Hamburg"
+    },
+    "phoneNumber": "+49 40 123456789",
+    "email": "filiale.altona@beispiel.de"
+  }
+}
+            </pre>
+    </section>
+
+    <section>
+        <h2>7. Mitarbeiter-Dashboard anzeigen (Es fehlt punkt 2 & 3)</h2>
+
+
+        <h3>Request</h3>
+        <pre>
+GET /api/users?role=employee
+Authorization: Bearer {admin_token}
+            </pre>
+
+        <h3>Response</h3>
+        <pre>
+HTTP/1.1 200 OK
+{
+  "status": "success",
+  "employees": [
+    {
+      "userId": "67890",
+      "firstName": "Anna",
+      "lastName": "Schmidt",
+      "email": "anna.schmidt@beispiel.de",
+      "role": "employee"
+    },
+    {
+      "userId": "67891",
+      "firstName": "Thomas",
+      "lastName": "Weber",
+      "email": "thomas.weber@beispiel.de",
+      "role": "employee"
+    }
+  ]
+}
+            </pre>
+    </section>
+</div>
+
+</body>
+</html>
