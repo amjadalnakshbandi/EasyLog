@@ -115,6 +115,49 @@
 <div class="container">
     <h1>API Documentation</h1>
 
+    <table border="1">
+        <thead>
+        <tr>
+            <th>CSV File</th>
+            <th>Related Endpoint</th>
+            <th>Purpose</th>
+            <th>Headers</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>users.csv</td>
+            <td>/api/users</td>
+            <td>Created user accounts</td>
+            <td>userId, firstName, lastName, email, password, role</td>
+        </tr>
+        <tr>
+            <td>logins.csv</td>
+            <td>/api/auth/login</td>
+            <td>Successful employee logins</td>
+            <td>userId, firstName, lastName, email, role, token</td>
+        </tr>
+        <tr>
+            <td>orders.csv</td>
+            <td>/api/orders</td>
+            <td>Orders submitted by employees</td>
+            <td>orderId, phoneId, phoneName, branchId, branchName, quantity, orderDate</td>
+        </tr>
+        <tr>
+            <td>inventory.csv</td>
+            <td>/api/inventory, /api/inventory/add</td>
+            <td>Inventory updates and current inventory status combined</td>
+            <td>phoneId, phoneName, previousQuantity, addedQuantity, currentQuantity, warehouseId, warehouseName, receivedDate, lastUpdated</td>
+        </tr>
+        <tr>
+            <td>branches.csv</td>
+            <td>/api/branches</td>
+            <td>List of company branches</td>
+            <td>branchId, name, street, postalCode, city, phoneNumber, email</td>
+        </tr>
+        </tbody>
+    </table>
+
     <section>
         <h2>1. Benutzerregistrierung (Administrator)</h2>
 
