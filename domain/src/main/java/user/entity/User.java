@@ -8,18 +8,50 @@ public class User {
     private final FirstName firstName;
     private final LastName lastName;
     private final Password password;
+    private final Token token;
     private final Email email;
     private final Role role;
 
-    private User(Builder builder) {
-        this.userID = builder.userID;
-        this.firstName = builder.firstName;
-        this.lastName = builder.lastName;
-        this.password = builder.password;
-        this.email = builder.email;
-        this.role = builder.role;
+    // ✅ Full constructor for registration
+    public User(UserID userID,
+                FirstName firstName,
+                LastName lastName,
+                Password password,
+                Email email,
+                Role role,
+                Token token) {
+
+        if (userID == null || firstName == null || lastName == null ||
+                password == null || email == null || role == null || token == null) {
+            throw new IllegalArgumentException("All fields must be non-null");
+        }
+
+        this.userID = userID;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = password;
+        this.email = email;
+        this.role = role;
+        this.token = token;
     }
 
+    // ✅ Minimal constructor for login
+    public User(Email email, Password password, Token token) {
+        if (email == null || password == null || token == null) {
+            throw new IllegalArgumentException("Email, password, and token are required for login");
+        }
+
+        this.email = email;
+        this.password = password;
+        this.token = token;
+
+        this.userID = null;
+        this.firstName = null;
+        this.lastName = null;
+        this.role = null;
+    }
+
+    // Getters
     public UserID getUserID() {
         return userID;
     }
@@ -44,60 +76,18 @@ public class User {
         return role;
     }
 
-    public static class Builder {
-        private UserID userID;
-        private FirstName firstName;
-        private LastName lastName;
-        private Password password;
-        private  Email email;
-        private Role role;
-
-        public Builder() {
-            // Default constructor
-        }
-
-        public Builder userID(UserID userID) {
-            this.userID = userID;
-            return this;
-        }
-
-        public Builder firstName(FirstName firstName) {
-            this.firstName = firstName;
-            return this;
-        }
-
-        public Builder lastName(LastName lastName) {
-            this.lastName = lastName;
-            return this;
-        }
-
-        public Builder password(Password password) {
-            this.password = password;
-            return this;
-        }
-
-        public Builder email(Email email) {
-            this.email = email;
-            return this;
-        }
-
-        public Builder role(Role role) {
-            this.role = role;
-            return this;
-        }
-
-        public User build() {
-            return new User(this);
-        }
+    public Token getToken() {
+        return token;
     }
 
     @Override
     public String toString() {
-        return "UserID: " + userID.getId() + "\n" +
-                "First Name: " + firstName.getFirstName() + "\n" +
-                "Last Name: " + lastName.getLastname() + "\n" +
-                "Password: " + password.getPassword() + "\n" +
-                "Email: " + email.getEmail() + "\n" +
-                "Role: " + role;
+        return "UserID: " + (userID != null ? userID.getId() : "N/A") + "\n" +
+                "First Name: " + (firstName != null ? firstName.getFirstName() : "N/A") + "\n" +
+                "Last Name: " + (lastName != null ? lastName.getLastname() : "N/A") + "\n" +
+                "Password: " + (password != null ? password.getPassword() : "N/A") + "\n" +
+                "Email: " + (email != null ? email.getEmail() : "N/A") + "\n" +
+                "Token: " + (token != null ? token.getToken() : "N/A") + "\n" +
+                "Role: " + (role != null ? role.toString() : "N/A");
     }
 }

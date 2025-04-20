@@ -1,17 +1,19 @@
 package com.example.plugin.controller.user;
 
 import com.example.plugin.persistence.user.UserRepositoryBridge;
+import com.example.plugin.model.user.LoginResponse;
+import com.example.plugin.model.user.AddUserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import response.ApiResponse;
 import response.ErrorResponse;
 import response.SuccessResponse;
 import user.UserDto;
 import user.entity.User;
 import user.valueObject.*;
-import response.ApiResponse;
-import response.ErrorResponse;
+
 import java.io.IOException;
 import java.util.UUID;
 
@@ -26,58 +28,91 @@ public class UserController {
         this.userRepositoryBridge = userRepositoryBridge;
     }
 
+    // 🧾 Add User (Registration)
     @PostMapping
-    public ResponseEntity<? extends ApiResponse> addUser(@RequestBody UserDto dto) {
+    public ResponseEntity<? extends ApiResponse> addUser(
+            @RequestHeader(value = "Authorization", required = false) String authHeader,
+            @RequestBody UserDto dto) {
+
         try {
-            // Convert role from String to enum
+            // Validate Authorization header
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(new ErrorResponse("Fehlender oder ungültiger Authorization-Header", "Unauthorized"));
+            }
+
+            String tokenValue = authHeader.substring(7); // Strip "Bearer "
+
+            if (!isValidAdminToken(tokenValue)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new ErrorResponse("Token ist nicht berechtigt, Benutzer zu erstellen", "Forbidden"));
+            }
+
             Role role = parseRole(dto.getRole());
 
-            // Create domain value objects
-            UserID userID = new UserID(UUID.randomUUID().toString());
-            FirstName firstName = new FirstName(dto.getFirstName());
-            LastName lastName = new LastName(dto.getLastName());
-            Email email = new Email(dto.getEmail());
-            Password password = new Password(dto.getPassword());
+            User user = new User(
+                    new UserID(UUID.randomUUID().toString()),
+                    new FirstName(dto.getFirstName()),
+                    new LastName(dto.getLastName()),
+                    new Password(dto.getPassword()),
+                    new Email(dto.getEmail()),
+                    role,
+                    new Token()
+            );
 
-            // Create the User entity
-            User user = new User.Builder()
-                    .userID(userID)
-                    .firstName(firstName)
-                    .lastName(lastName)
-                    .password(password)
-                    .email(email)
-                    .role(role)
-                    .build();
-
-            // Persist the user
             userRepositoryBridge.addUser(user);
 
-            // Create response using the actual values from value objects
-            UserResponse response = new UserResponse(
-                    user.getUserID().getId(),
-                    new UserDto(
-                            user.getFirstName().getFirstName(),
-                            user.getLastName().getLastname(),
-                            user.getEmail().getEmail(),
-                            user.getPassword().getPassword(),
-                            user.getRole().toString()
-                    )
+            // Construct response DTO
+            UserDto responseDto = new UserDto(
+                    user.getUserID().toString(),
+                    user.getFirstName().getFirstName(),
+                    user.getLastName().getLastname(),
+                    user.getEmail().getEmail(),
+                    user.getRole().toString()
             );
 
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(new SuccessResponse<>(
-                            "Benutzerkonto erfolgreich erstellt",
-                            response
-                    ));
+                    .body(new SuccessResponse<>("Benutzerkonto erfolgreich erstellt", responseDto));
 
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorResponse(
-                            e.getMessage(),
-                            "Validation Error"
-                    ));
+                    .body(new ErrorResponse(e.getMessage(), "Internal Server Error"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse(e.getMessage(), "Validation Error"));
         }
     }
+
+    // 🔐 Login User
+    @PostMapping("/login")
+    public ResponseEntity<? extends ApiResponse> loginUser(@RequestBody UserDto loginDto) {
+        try {
+            User user = new User(
+                    new Email(loginDto.getEmail()),
+                    new Password(loginDto.getPassword()),
+                    new Token()
+            );
+
+            userRepositoryBridge.loginUser(user); // populates token etc.
+
+            // ✅ Build response with just email + token
+            LoginResponse response = new LoginResponse(
+                    user.getEmail().getEmail(),
+                    user.getToken().getToken()
+            );
+
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new SuccessResponse<>("Login erfolgreich", response));
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ErrorResponse(e.getMessage(), "Authentication Failed"));
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse(e.getMessage(), "Internal Server Error"));
+        }
+    }
+
 
     private Role parseRole(String role) {
         if (role == null) throw new IllegalArgumentException("Role is required");
@@ -88,18 +123,7 @@ public class UserController {
         };
     }
 
-    // Simple response wrapper class
-    private static class UserResponse {
-        private final String userId;
-        private final UserDto userDetails;
-
-        public UserResponse(long userId, UserDto userDetails) {
-            this.userId = String.valueOf(userId);
-            this.userDetails = userDetails;
-        }
-
-        // Getters
-        public String getUserId() { return userId; }
-        public UserDto getUserDetails() { return userDetails; }
+    private boolean isValidAdminToken(String token) {
+        return "ASE".equals(token); // Super admin token
     }
 }

@@ -17,6 +17,12 @@ public class UserRepositoryBridge implements UserRepository {
     }
 
     @Override
+    public void loginUser(User user) throws IOException {
+        UserService userService = new UserService();
+        userService.loginUserImplementation(user);
+    }
+
+    @Override
     public List<Employees> getAllEmployee() throws IOException {
         UserService userService = new UserService();
         return userService.getAllEmployeeImplementation() ;

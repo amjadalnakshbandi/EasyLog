@@ -1,5 +1,47 @@
-### GET request to example server
-GET https://examples.http-client.intellij.net/get
-    ?generated-in=IntelliJ IDEA
+### Create a New User As Super Admin
+POST http://localhost:8080/api/users
+Content-Type: application/json
+Authorization: Bearer ASE
+
+{
+  "firstName": "Amjad",
+  "lastName": "Alnakshbandi",
+  "email": "Amjad.Alnakshbandi@ASE.de",
+  "password": "Amjad_Alnakshbandi_ase_1!",
+  "role": "Admin"
+}
 
 ###
+#{
+#  "status": "success",
+#  "message": "Benutzerkonto erfolgreich erstellt",
+#  "data": {
+#    "userId": "885649",
+#    "userDetails": {
+#      "firstName": "Amjad",
+#      "lastName": "Alnakshbandi",
+#      "email": "Amjad.Alnakshbandi@ASE.de",
+#      "password": "Amjad_Alnakshbandi_ase_1!",
+#      "role": "admin",
+#      "token": null
+#    }
+#  }
+#}
+
+### Login with valid credentials
+POST http://localhost:8080/api/users/login
+Content-Type: application/json
+
+{
+  "email": "Amjad.Alnakshbandi@ASE.de",
+  "password": "Amjad_Alnakshbandi_ase_1!"
+}
+
+###{
+#    "status": "success",
+#    "message": "Login erfolgreich",
+#    "data": {
+#        "email": "Amjad.Alnakshbandi@ASE.de",
+#        "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0YTA5YWQ4ZSJ9.NooFtNGz9AbIDgTg_xj2U5uKK-WWGJ_BIjn2wuqpYm0"
+#    }
+#}

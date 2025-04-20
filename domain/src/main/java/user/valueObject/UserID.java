@@ -12,6 +12,11 @@ public class UserID {
         this.id = 100000L + random.nextInt(900000);
     }
 
+    @Override
+    public String toString() {
+        return ""+id;
+    }
+
     public long getId() {
         return id;
     }
