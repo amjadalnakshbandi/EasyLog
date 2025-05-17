@@ -1,6 +1,8 @@
 package user;
 import user.aggregate.Employees;
 import user.entity.User;
+import user.valueObject.Role;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -40,8 +42,6 @@ public class UserService {
             System.err.println("Error saving user to CSV: " + e.getMessage());
         }
     }
-
-
     public void loginUserImplementation(User user) throws IOException {
        // System.out.println("📥 Received login request for: " + user.getEmail().getEmail());
 
@@ -135,7 +135,6 @@ public class UserService {
         }
 
     }
-
     public void logoutUserImplementation(User user) {
         try {
             File loginFile = new File(csv_login);
@@ -180,9 +179,48 @@ public class UserService {
 
 
     public List<Employees> getAllEmployeeImplementation() {
-        return List.of();
-    }
+        List<Employees> employeesList = new ArrayList<>();
 
+        try (BufferedReader reader = new BufferedReader(new FileReader(csv_users))) {
+            reader.readLine(); // Skip header
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] data = line.split(",");
+                if (data.length < 6) continue; // Skip invalid lines
+
+                String roleStr = data[5].trim().toUpperCase();
+
+                Role role;
+                try {
+                    role = Role.valueOf(roleStr);
+                } catch (IllegalArgumentException e) {
+                    System.err.println("⚠️ Unknown role: " + roleStr);
+                    continue;
+                }
+
+                if (role != Role.ADMIN && role != Role.MITARBEITER) continue;
+
+                User user = new User(
+                        new user.valueObject.UserID(data[0].trim()),
+                        new user.valueObject.FirstName(data[1].trim()),
+                        new user.valueObject.LastName(data[2].trim()),
+                        new user.valueObject.Password(data[4].trim()),
+                        new user.valueObject.Email(data[3].trim()),
+                        role
+                );
+
+                Employees employee = new Employees();
+                employee.setUser(user);
+                employeesList.add(employee);
+            }
+
+        } catch (IOException e) {
+            System.err.println("❌ Error reading users file: " + e.getMessage());
+        }
+
+        return employeesList;
+    }
 
 
 }

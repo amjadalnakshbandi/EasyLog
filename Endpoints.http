@@ -4,11 +4,11 @@ Content-Type: application/json
 Authorization: Bearer ASE
 
 {
-  "firstName": "Amjad",
-  "lastName": "Alnakshbandi",
-  "email": "Amjad.Alnakshbandi@ASE.de",
-  "password": "Amjad_Alnakshbandi_ase_1!",
-  "role": "Admin"
+  "firstName": "Jan",
+  "lastName": "Toll",
+  "email": "Jan.Toll@ASE.de",
+  "password": "Jan_Toll_ase_1!",
+  "role": "Mitarbeiter"
 }
 
 ###
@@ -16,25 +16,23 @@ Authorization: Bearer ASE
 #  "status": "success",
 #  "message": "Benutzerkonto erfolgreich erstellt",
 #  "data": {
-#    "userId": "885649",
-#    "userDetails": {
-#      "firstName": "Amjad",
-#      "lastName": "Alnakshbandi",
-#      "email": "Amjad.Alnakshbandi@ASE.de",
-#      "password": "Amjad_Alnakshbandi_ase_1!",
-#      "role": "admin",
-#      "token": null
-#    }
+#    "firstName": "Amjad",
+#    "lastName": "Alnakshbandi",
+#    "email": "Amjad.Alnakshbandi@ASE.de",
+#    "password": "Amjad_Alnakshbandi_ase_1!",
+#    "role": "admin",
+#    "token": null
 #  }
 #}
+
 
 ### Mitarbeiter einloggen
 POST http://localhost:8080/api/users/login
 Content-Type: application/json
 
 {
-  "email": "Amjad.Alnakshbandi@ASE.de",
-  "password": "Amjad_Alnakshbandi_ase_1!"
+  "email": "Jan.Toll@ASE.de",
+  "password": "Jan_Toll_ase_1!"
 }
 
 ###{
@@ -52,22 +50,22 @@ POST http://localhost:8080/api/users/logout
 Content-Type: application/json
 
 {
-  "email": "Amjad.Alnakshbandi@ASE.de",
-  "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzMDE4YTA5MiJ9.cl8O7sWxmHw1xDBs0CJxP6nXpFG-zI3TfZBApeftnkw"
+  "email": "Jan.Toll@ASE.de",
+  "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlZWU3NTRmZCJ9.ncN1DuDI41vKC8fuBpk_BhlaOXprh144zdEmCXOrwg4"
 }
 
 
 ### Handybestellung entgegennehmen
 POST http://localhost:8080/api/orders
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzMDE4YTA5MiJ9.cl8O7sWxmHw1xDBs0CJxP6nXpFG-zI3TfZBApeftnkw
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjMWYxNWI3MCJ9.JnoIc1BWCnreT_73f2qWbmUJtmF9437_T0jCsxB1Tyc
 
 {
-  "phoneId": "P123",
+  "phoneId": "P126",
   "branchId": "B789",
-  "phoneName": "Smartphone XYZ",
+  "phoneName": "IPhone 15 pro max",
   "branchName": "Filiale Berlin-Mitte",
-  "quantity": 5
+  "quantity": 120
 }
 
 ###{
@@ -82,4 +80,32 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzMDE4YTA5MiJ9.cl8O7sWxmHw1
 #    "quantity": 5,
 #    "orderDate": "2025-05-17 10:38:42"
 #  }
+#}
+
+# Benutzerliste abrufen
+GET http://localhost:8080/api/users
+Authorization: Bearer ASE
+
+
+##{
+#  "status": "success",
+#  "message": "Benutzer erfolgreich geladen",
+#  "data": [
+#    {
+#      "firstName": "Amjad",
+#      "lastName": "Alnakshbandi",
+#      "email": "Amjad.Alnakshbandi@ASE.de",
+#      "password": "Amjad_Alnakshbandi_ase_1!",
+#      "role": "admin",
+#      "token": null
+#    },
+#    {
+#      "firstName": "Jan",
+#      "lastName": "Toll",
+#      "email": "Jan.Toll@ASE.de",
+#      "password": "Jan_Toll_ase_1!",
+#      "role": "mitarbeiter",
+#      "token": null
+#    }
+#  ]
 #}

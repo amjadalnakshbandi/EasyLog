@@ -2,7 +2,6 @@ package com.example.plugin.controller.user;
 
 import com.example.plugin.persistence.user.UserRepositoryBridge;
 import com.example.plugin.model.user.LoginResponse;
-import com.example.plugin.model.user.AddUserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,11 +10,12 @@ import response.ApiResponse;
 import response.ErrorResponse;
 import response.SuccessResponse;
 import user.UserDto;
+import user.aggregate.Employees;
 import user.entity.User;
 import user.valueObject.*;
 
 import java.io.IOException;
-import java.util.UUID;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
@@ -50,7 +50,7 @@ public class UserController {
             Role role = parseRole(dto.getRole());
 
             User user = new User(
-                    new UserID(UUID.randomUUID().toString()),
+                    new UserID(),
                     new FirstName(dto.getFirstName()),
                     new LastName(dto.getLastName()),
                     new Password(dto.getPassword()),
@@ -63,12 +63,13 @@ public class UserController {
 
             // Construct response DTO
             UserDto responseDto = new UserDto(
-                    user.getUserID().toString(),
                     user.getFirstName().getFirstName(),
                     user.getLastName().getLastname(),
                     user.getEmail().getEmail(),
+                    user.getPassword().getPassword(),
                     user.getRole().toString()
             );
+
 
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new SuccessResponse<>("Benutzerkonto erfolgreich erstellt", responseDto));
@@ -112,9 +113,6 @@ public class UserController {
         }
     }
 
-
-
-
     // 🚪 Logout User
     @PostMapping("/logout")
     public ResponseEntity<? extends ApiResponse> logoutUser(@RequestBody UserDto logoutDto) {
@@ -140,6 +138,36 @@ public class UserController {
         }
     }
 
+
+    // 📋 Get all employees and admins
+    @GetMapping
+    public ResponseEntity<? extends ApiResponse> getAllUsers() {
+        try {
+            List<Employees> employees = userRepositoryBridge.getAllEmployee();
+
+            // Map to DTOs
+            List<UserDto> userDtos = employees.stream()
+                    .map(emp -> {
+                        User user = emp.getUser();
+                        return new UserDto(
+                                user.getFirstName().getFirstName(),
+                                user.getLastName().getLastname(),
+                                user.getEmail().getEmail(),
+                                user.getPassword().getPassword(),
+                                user.getRole().toString()
+                        );
+                    })
+                    .toList();
+
+            return ResponseEntity.ok(
+                    new SuccessResponse<>("Benutzer erfolgreich geladen", userDtos)
+            );
+
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse(e.getMessage(), "Internal Server Error"));
+        }
+    }
 
 
     private Role parseRole(String role) {

@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>API Documentation</title>
     <style>
-        /* General Styles */
         body {
             font-family: Arial, sans-serif;
             line-height: 1.6;
@@ -19,7 +18,6 @@
             color: #2C3E50;
         }
 
-        /* Container Styles */
         .container {
             width: 90%;
             margin: 20px auto;
@@ -29,25 +27,21 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        /* Section Styles */
         section {
             margin-bottom: 30px;
         }
 
         section h2 {
-            margin-top: 0;
             font-size: 24px;
             border-bottom: 2px solid #2C3E50;
             padding-bottom: 5px;
         }
 
         section h3 {
-            margin-top: 0;
             font-size: 20px;
             color: #34495E;
         }
 
-        /* Code Block Styles */
         pre {
             background-color: #f4f4f4;
             padding: 15px;
@@ -64,7 +58,6 @@
             color: #2980B9;
         }
 
-        /* Table Styles */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -86,22 +79,7 @@
             background-color: #f9f9f9;
         }
 
-        /* Button Style */
-        .btn {
-            display: inline-block;
-            padding: 10px 15px;
-            background-color: #3498DB;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            margin-top: 10px;
-        }
 
-        .btn:hover {
-            background-color: #2980B9;
-        }
-
-        /* Responsive Design */
         @media (max-width: 768px) {
             .container {
                 width: 100%;
@@ -114,8 +92,7 @@
 
 <div class="container">
     <h1>API Documentation</h1>
-
-    <table border="1">
+    <table>
         <thead>
         <tr>
             <th>CSV File</th>
@@ -128,13 +105,13 @@
         <tr>
             <td>users.csv</td>
             <td>/api/users</td>
-            <td>Created user accounts</td>
+            <td>Create user accounts</td>
             <td>userId, firstName, lastName, email, password, role</td>
         </tr>
         <tr>
             <td>logins.csv</td>
-            <td>/api/auth/login</td>
-            <td>Successful employee logins</td>
+            <td>/api/auth/login, /api/users/logout</td>
+            <td>User login/logout records</td>
             <td>userId, firstName, lastName, email, role, token</td>
         </tr>
         <tr>
@@ -146,7 +123,7 @@
         <tr>
             <td>inventory.csv</td>
             <td>/api/inventory, /api/inventory/add</td>
-            <td>Inventory updates and current inventory status combined</td>
+            <td>Inventory updates and current stock</td>
             <td>phoneId, phoneName, previousQuantity, addedQuantity, currentQuantity, warehouseId, warehouseName, receivedDate, lastUpdated</td>
         </tr>
         <tr>
@@ -157,10 +134,8 @@
         </tr>
         </tbody>
     </table>
-
     <section>
         <h2>1. Benutzerregistrierung (Administrator)</h2>
-
         <h3>Request</h3>
         <pre>
 POST /api/users
@@ -172,10 +147,9 @@ Authorization: Bearer {admin_token}
   "lastName": "Mustermann",
   "email": "max.mustermann@beispiel.de",
   "password": "sicheres_passwort123",
-  "role": "admin"  // oder "employee" für Mitarbeiter
+  "role": "admin"
 }
-            </pre>
-
+        </pre>
         <h3>Response (Erfolg)</h3>
         <pre>
 HTTP/1.1 201 Created
@@ -191,8 +165,7 @@ HTTP/1.1 201 Created
     "role": "admin"
   }
 }
-            </pre>
-
+        </pre>
         <h3>Response (Fehler)</h3>
         <pre>
 HTTP/1.1 400 Bad Request
@@ -200,12 +173,10 @@ HTTP/1.1 400 Bad Request
   "status": "error",
   "message": "E-Mail-Adresse bereits vergeben"
 }
-            </pre>
+        </pre>
     </section>
-
     <section>
         <h2>2. Mitarbeiter einloggen</h2>
-
         <h3>Request</h3>
         <pre>
 POST /api/auth/login
@@ -215,21 +186,19 @@ Content-Type: application/json
   "email": "mitarbeiter@beispiel.de",
   "password": "mitarbeiter_passwort"
 }
-            </pre>
-
+        </pre>
         <h3>Response (Erfolg)</h3>
         <pre>
 HTTP/1.1 200 OK
-
-"status": "success",
-"message": "Login erfolgreich",
-"data":
 {
+  "status": "success",
+  "message": "Login erfolgreich",
+  "data": {
     "email": "Amjad.Alnakshbandi@ASE.de",
-    "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0YTA5YWQ4ZSJ9.NooFtNGz9AbIDgTg_xj2U5uKK-WWGJ_BIjn2wuqpYm0"
+    "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzMDE4YTA5MiJ9.cl8O7sWxmHw1xDBs0CJxP6nXpFG-zI3TfZBApeftnkw"
+  }
 }
-            </pre>
-
+        </pre>
         <h3>Response (Fehler)</h3>
         <pre>
 HTTP/1.1 401 Unauthorized
@@ -237,12 +206,48 @@ HTTP/1.1 401 Unauthorized
   "status": "error",
   "message": "Ungültige Anmeldedaten"
 }
-            </pre>
+        </pre>
     </section>
-
     <section>
-        <h2>3. Handybestellung entgegennehmen</h2>
+        <h2>3. Benutzer ausloggen</h2>
+        <h3>Request</h3>
+        <pre>
+POST /api/users/logout
+Content-Type: application/json
 
+{
+  "email": "Amjad.Alnakshbandi@ASE.de",
+  "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzMDE4YTA5MiJ9.cl8O7sWxmHw1xDBs0CJxP6nXpFG-zI3TfZBApeftnkw"
+}
+        </pre>
+        <h3>Response (Erfolg)</h3>
+        <pre>
+HTTP/1.1 200 OK
+{
+  "status": "success",
+  "message": "Logout erfolgreich",
+  "data": null
+}
+        </pre>
+        <h3>Response (Fehler - fehlende Felder)</h3>
+        <pre>
+HTTP/1.1 400 Bad Request
+{
+  "status": "error",
+  "message": "Email und Token sind erforderlich"
+}
+        </pre>
+        <h3>Response (Fehler - Serverproblem)</h3>
+        <pre>
+HTTP/1.1 500 Internal Server Error
+{
+  "status": "error",
+  "message": "Fehler beim Logout-Vorgang"
+}
+        </pre>
+    </section>
+    <section>
+        <h2>4. Handybestellung entgegennehmen</h2>
         <h3>Request</h3>
         <pre>
 POST /api/orders
@@ -256,8 +261,7 @@ Authorization: Bearer {employee_token}
   "branchName": "Filiale Berlin-Mitte",
   "quantity": 5
 }
-            </pre>
-
+        </pre>
         <h3>Response (Erfolg)</h3>
         <pre>
 HTTP/1.1 201 Created
@@ -274,12 +278,10 @@ HTTP/1.1 201 Created
     "orderDate": "2025-04-10T10:30:00"
   }
 }
-            </pre>
+        </pre>
     </section>
-
     <section>
-        <h2>4. Handys ins Lager einbuchen</h2>
-
+        <h2>5. Handys ins Lager einbuchen</h2>
         <h3>Request</h3>
         <pre>
 POST /api/inventory/add
@@ -291,8 +293,7 @@ Authorization: Bearer {employee_token}
   "quantity": 20,
   "warehouseId": "W456"
 }
-            </pre>
-
+        </pre>
         <h3>Response (Erfolg)</h3>
         <pre>
 HTTP/1.1 200 OK
@@ -310,18 +311,15 @@ HTTP/1.1 200 OK
     "receivedDate": "2025-04-10T14:15:00"
   }
 }
-            </pre>
+        </pre>
     </section>
-
     <section>
-        <h2>5. Lagerbestand anzeigen (Es fehlt punkt 2 & 3)</h2>
-
+        <h2>6. Lagerbestand anzeigen</h2>
         <h3>Request</h3>
         <pre>
 GET /api/inventory
 Authorization: Bearer {admin_token}
-            </pre>
-
+        </pre>
         <h3>Response</h3>
         <pre>
 HTTP/1.1 200 OK
@@ -335,23 +333,13 @@ HTTP/1.1 200 OK
       "warehouseId": "W456",
       "warehouseName": "Hauptlager Nord",
       "lastUpdated": "2025-04-10T14:15:00"
-    },
-    {
-      "phoneId": "P23456",
-      "phoneName": "Smartphone ABC",
-      "quantity": 42,
-      "warehouseId": "W456",
-      "warehouseName": "Hauptlager Nord",
-      "lastUpdated": "2025-04-09T09:30:00"
     }
   ]
 }
-            </pre>
+        </pre>
     </section>
-
     <section>
-        <h2>6. Neue Filiale hinzufügen (Es fehlt punkt 2 & 3) </h2>
-
+        <h2>7. Neue Filiale hinzufügen</h2>
         <h3>Request</h3>
         <pre>
 POST /api/branches
@@ -368,8 +356,7 @@ Authorization: Bearer {admin_token}
   "phoneNumber": "+49 40 123456789",
   "email": "filiale.altona@beispiel.de"
 }
-            </pre>
-
+        </pre>
         <h3>Response (Erfolg)</h3>
         <pre>
 HTTP/1.1 201 Created
@@ -388,19 +375,15 @@ HTTP/1.1 201 Created
     "email": "filiale.altona@beispiel.de"
   }
 }
-            </pre>
+        </pre>
     </section>
-
     <section>
-        <h2>7. Mitarbeiter-Dashboard anzeigen (Es fehlt punkt 2 & 3)</h2>
-
-
+        <h2>8. Mitarbeiter listen</h2>
         <h3>Request</h3>
         <pre>
 GET /api/users?role=employee
 Authorization: Bearer {admin_token}
-            </pre>
-
+        </pre>
         <h3>Response</h3>
         <pre>
 HTTP/1.1 200 OK
@@ -413,17 +396,10 @@ HTTP/1.1 200 OK
       "lastName": "Schmidt",
       "email": "anna.schmidt@beispiel.de",
       "role": "employee"
-    },
-    {
-      "userId": "67891",
-      "firstName": "Thomas",
-      "lastName": "Weber",
-      "email": "thomas.weber@beispiel.de",
-      "role": "employee"
     }
   ]
 }
-            </pre>
+        </pre>
     </section>
 </div>
 

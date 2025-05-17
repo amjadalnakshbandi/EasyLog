@@ -35,11 +35,4 @@ public class OrderResponse {
         this.orderDate = orderDate;
     }
 
-    public String getOrderId() { return orderId; }
-    public String getPhoneId() { return phoneId; }
-    public String getPhoneName() { return phoneName; }
-    public String getBranchId() { return branchId; }
-    public String getBranchName() { return branchName; }
-    public int getQuantity() { return quantity; }
-    public String getOrderDate() { return orderDate; }
 }

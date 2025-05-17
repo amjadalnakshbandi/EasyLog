@@ -68,6 +68,28 @@ public class User {
     }
 
 
+    // Constructor for loading users from CSV
+    public User(UserID userID,
+                FirstName firstName,
+                LastName lastName,
+                Password password,
+                Email email,
+                Role role) {
+
+        if (userID == null || firstName == null || lastName == null ||
+                password == null || email == null || role == null) {
+            throw new IllegalArgumentException("All fields must be non-null");
+        }
+
+        this.userID = userID;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = password;
+        this.email = email;
+        this.role = role;
+        this.token = null; // Token not required in this context
+    }
+
     // Getters
     public UserID getUserID() {
         return userID;
@@ -99,12 +121,14 @@ public class User {
 
     @Override
     public String toString() {
-        return "UserID: " + (userID != null ? userID.getId() : "N/A") + "\n" +
-                "First Name: " + (firstName != null ? firstName.getFirstName() : "N/A") + "\n" +
-                "Last Name: " + (lastName != null ? lastName.getLastname() : "N/A") + "\n" +
-                "Password: " + (password != null ? password.getPassword() : "N/A") + "\n" +
-                "Email: " + (email != null ? email.getEmail() : "N/A") + "\n" +
-                "Token: " + (token != null ? token.getToken() : "N/A") + "\n" +
-                "Role: " + (role != null ? role.toString() : "N/A");
+        return "User{" +
+                "userID=" + userID +
+                ", firstName=" + firstName +
+                ", lastName=" + lastName +
+                ", password=" + password +
+                ", token=" + token +
+                ", email=" + email +
+                ", role=" + role +
+                '}';
     }
 }

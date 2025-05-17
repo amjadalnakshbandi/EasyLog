@@ -7,14 +7,19 @@ public class UserID {
     private static final Random random = new Random();
     private final long id;
 
-    public UserID(String string) {
-        // Generates a random number between 100000 and 999999 (6 digits)
+    // Random ID constructor (used for registration)
+    public UserID() {
         this.id = 100000L + random.nextInt(900000);
     }
 
-    @Override
-    public String toString() {
-        return ""+id;
+    // For loading from CSV or external systems
+    public UserID(long id) {
+        this.id = id;
+    }
+
+    // Convenience for String-based sources
+    public UserID(String idStr) {
+        this.id = Long.parseLong(idStr);
     }
 
     public long getId() {
