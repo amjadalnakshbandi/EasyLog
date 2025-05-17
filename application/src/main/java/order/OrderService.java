@@ -1,6 +1,7 @@
 package order;
 
 import order.entity.Order;
+import order.service.OrderLimitPolicyService;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -10,18 +11,22 @@ import java.nio.file.Paths;
 
 public class OrderService {
 
-    private static final String csv_orders = "Data/orders.csv";
+    private static final String CSV_ORDERS = "Data/orders.csv";
+    private final OrderLimitPolicyService orderLimitPolicyService = new OrderLimitPolicyService();
 
-    public void addOderImplementation(Order order) {
+    public void addOrderImplementation(Order order) {
+        // Step 1: Validate order policy (e.g., daily limit)
+        orderLimitPolicyService.validateOrderLimit(order); // may throw IllegalStateException
+
+        // Step 2: Write to CSV if valid
         try {
-            // Check if file exists and has content
-            Path csv_orders_path = Paths.get(csv_orders);
-            boolean fileExists = Files.exists(csv_orders_path) && Files.size(csv_orders_path) > 0;
+            Path csvOrdersPath = Paths.get(CSV_ORDERS);
+            boolean fileExists = Files.exists(csvOrdersPath) && Files.size(csvOrdersPath) > 0;
 
-            FileWriter writer = new FileWriter(csv_orders, true); // append mode
+            FileWriter writer = new FileWriter(CSV_ORDERS, true); // append mode
 
             if (!fileExists) {
-                // Write header if file is new/empty
+                // Write CSV header
                 writer.append("orderId,phoneId,phoneName,branchId,branchName,quantity,orderDate\n");
             }
 
@@ -34,12 +39,11 @@ public class OrderService {
             writer.append(String.valueOf(order.getQuantity().getQuantity())).append(",");
             writer.append(order.getOrderDate().getOrderDate()).append("\n");
 
-
             writer.close();
-
             System.out.println("Order added to CSV successfully: " + order);
+
         } catch (IOException e) {
-            System.err.println("Error saving order to CSV: " + e.getMessage());
+            throw new IllegalStateException("Fehler beim Schreiben der Bestellung in die CSV-Datei: " + e.getMessage());
         }
     }
 }

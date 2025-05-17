@@ -69,6 +69,10 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ErrorResponse(e.getMessage(), "Validation Error"));
         }
+        catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse(e.getMessage(), " Exceeds daily quantity limit"));
+        }
     }
 
 }

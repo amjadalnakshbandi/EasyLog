@@ -10,6 +10,6 @@ public class OrderRepositoryBridge implements OrderRepository {
     @Override
     public void addOrder(Order order) throws IOException {
         OrderService orderService = new OrderService();
-        orderService.addOderImplementation(order);
+        orderService.addOrderImplementation(order);
     }
 }
