@@ -51,6 +51,23 @@ public class User {
         this.role = null;
     }
 
+    // ✅ Constructor for logout
+    public User(Email email, Token token) {
+        if (email == null || token == null) {
+            throw new IllegalArgumentException("Email and token are required for logout");
+        }
+
+        this.email = email;
+        this.token = token;
+
+        this.userID = null;
+        this.firstName = null;
+        this.lastName = null;
+        this.password = null;
+        this.role = null;
+    }
+
+
     // Getters
     public UserID getUserID() {
         return userID;

@@ -23,6 +23,13 @@ public class UserRepositoryBridge implements UserRepository {
     }
 
     @Override
+    public void logoutUser(User user) throws IOException {
+        UserService userService = new UserService();
+        userService.logoutUserImplementation(user);
+
+    }
+
+    @Override
     public List<Employees> getAllEmployee() throws IOException {
         UserService userService = new UserService();
         return userService.getAllEmployeeImplementation() ;

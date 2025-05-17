@@ -47,6 +47,16 @@ Content-Type: application/json
 #}
 
 
+### Mitarbeiter ausloggen
+POST http://localhost:8080/api/users/logout
+Content-Type: application/json
+
+{
+  "email": "Amjad.Alnakshbandi@ASE.de",
+  "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzMDE4YTA5MiJ9.cl8O7sWxmHw1xDBs0CJxP6nXpFG-zI3TfZBApeftnkw"
+}
+
+
 ### Handybestellung entgegennehmen
 POST http://localhost:8080/api/orders
 Content-Type: application/json

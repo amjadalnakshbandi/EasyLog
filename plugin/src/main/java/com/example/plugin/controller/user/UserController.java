@@ -33,7 +33,6 @@ public class UserController {
     public ResponseEntity<? extends ApiResponse> addUser(
             @RequestHeader(value = "Authorization", required = false) String authHeader,
             @RequestBody UserDto dto) {
-
         try {
             // Validate Authorization header
             if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -112,6 +111,35 @@ public class UserController {
                     .body(new ErrorResponse(e.getMessage(), "Internal Server Error"));
         }
     }
+
+
+
+
+    // 🚪 Logout User
+    @PostMapping("/logout")
+    public ResponseEntity<? extends ApiResponse> logoutUser(@RequestBody UserDto logoutDto) {
+        try {
+            if (logoutDto.getEmail() == null || logoutDto.getToken() == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ErrorResponse("Email und Token sind erforderlich", "Validation Error"));
+            }
+
+            User user = new User(
+                    new Email(logoutDto.getEmail()),
+                    new Token(logoutDto.getToken())
+            );
+
+            userRepositoryBridge.logoutUser(user);
+
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new SuccessResponse<>("Logout erfolgreich", null));
+
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse(e.getMessage(), "Internal Server Error"));
+        }
+    }
+
 
 
     private Role parseRole(String role) {

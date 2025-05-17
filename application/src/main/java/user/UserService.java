@@ -136,9 +136,53 @@ public class UserService {
 
     }
 
+    public void logoutUserImplementation(User user) {
+        try {
+            File loginFile = new File(csv_login);
+            if (!loginFile.exists()) {
+                System.err.println("⚠️ Login file does not exist.");
+                return;
+            }
+
+            List<String> updatedLines = new ArrayList<>();
+            try (BufferedReader reader = new BufferedReader(new FileReader(csv_login))) {
+                String header = reader.readLine();
+                if (header != null) {
+                    updatedLines.add(header); // Keep the header
+                }
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    String[] loginData = line.split(",");
+                    if (loginData.length >= 4) {
+                        String existingEmail = loginData[3].trim();
+                        if (!existingEmail.equals(user.getEmail().getEmail())) {
+                            updatedLines.add(line); // Keep other users
+                        }
+                    }
+                }
+            }
+
+            // Write the updated lines back to the file
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(csv_login, false))) {
+                for (String updatedLine : updatedLines) {
+                    writer.write(updatedLine);
+                    writer.newLine();
+                }
+            }
+
+            System.out.println("✅ User logged out successfully: " + user.getEmail().getEmail());
+
+        } catch (IOException e) {
+            System.err.println("❌ Error during logout: " + e.getMessage());
+        }
+    }
+
+
     public List<Employees> getAllEmployeeImplementation() {
         return List.of();
     }
+
 
 
 }

@@ -11,12 +11,20 @@ public class Token {
     private static final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     private final String token;
 
-    // Generate token with random UUID as subject
+    // Generate a new random token
     public Token() {
         this.token = Jwts.builder()
-                .setSubject(UUID.randomUUID().toString().substring(0,8)) // Random subject
+                .setSubject(UUID.randomUUID().toString().substring(0, 8))
                 .signWith(SECRET_KEY)
                 .compact();
+    }
+
+    // ✅ Reconstruct token from a known string (e.g., from logout request)
+    public Token(String token) {
+        if (token == null || token.trim().isEmpty()) {
+            throw new IllegalArgumentException("Token string cannot be null or empty");
+        }
+        this.token = token;
     }
 
     public String getToken() {
