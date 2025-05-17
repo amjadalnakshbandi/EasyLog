@@ -1,4 +1,4 @@
-### Create a New User As Super Admin
+### Benutzerregistrierung (Administrator)
 POST http://localhost:8080/api/users
 Content-Type: application/json
 Authorization: Bearer ASE
@@ -28,7 +28,7 @@ Authorization: Bearer ASE
 #  }
 #}
 
-### Login with valid credentials
+### Mitarbeiter einloggen
 POST http://localhost:8080/api/users/login
 Content-Type: application/json
 
@@ -44,4 +44,32 @@ Content-Type: application/json
 #        "email": "Amjad.Alnakshbandi@ASE.de",
 #        "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0YTA5YWQ4ZSJ9.NooFtNGz9AbIDgTg_xj2U5uKK-WWGJ_BIjn2wuqpYm0"
 #    }
+#}
+
+
+### Handybestellung entgegennehmen
+POST http://localhost:8080/api/orders
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzMDE4YTA5MiJ9.cl8O7sWxmHw1xDBs0CJxP6nXpFG-zI3TfZBApeftnkw
+
+{
+  "phoneId": "P123",
+  "branchId": "B789",
+  "phoneName": "Smartphone XYZ",
+  "branchName": "Filiale Berlin-Mitte",
+  "quantity": 5
+}
+
+###{
+#  "status": "success",
+#  "message": "Bestellung erfolgreich erstellt",
+#  "data": {
+#    "orderId": "O001",
+#    "phoneId": "P123",
+#    "phoneName": "Smartphone XYZ",
+#    "branchId": "B789",
+#    "branchName": "Filiale Berlin-Mitte",
+#    "quantity": 5,
+#    "orderDate": "2025-05-17 10:38:42"
+#  }
 #}

@@ -1,8 +1,6 @@
 package user;
-
 import user.aggregate.Employees;
 import user.entity.User;
-
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -40,12 +38,11 @@ public class UserService {
             //System.out.println("User added to CSV successfully: " + user.toString());
         } catch (IOException e) {
             System.err.println("Error saving user to CSV: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
 
-    public UserDto loginUserImplementation(User user) throws IOException {
+    public void loginUserImplementation(User user) throws IOException {
        // System.out.println("📥 Received login request for: " + user.getEmail().getEmail());
 
         String userId = null;
@@ -137,7 +134,6 @@ public class UserService {
             }
         }
 
-        return new UserDto(user.getEmail().getEmail(), user.getToken().getToken());
     }
 
     public List<Employees> getAllEmployeeImplementation() {
