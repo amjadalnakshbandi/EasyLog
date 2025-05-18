@@ -12,36 +12,42 @@ import java.nio.file.Paths;
 
 public class OrderService {
 
-    Path csv_orders_path = Paths.get(constants.CSV_Orders_PATH);
+    private final Path csvOrdersPath = Paths.get(constants.CSV_Orders_PATH);
+    private final OrderLimitPolicyService orderLimitPolicyService;
 
-    private final OrderLimitPolicyService orderLimitPolicyService = new OrderLimitPolicyService();
+    // Dependency Injection via Constructor
+    public OrderService(OrderLimitPolicyService orderLimitPolicyService) {
+        this.orderLimitPolicyService = orderLimitPolicyService;
+    }
 
-    public void addOrderImplementation(Order order) throws IOException, IllegalArgumentException {
-        // Step 1: Validate order policy
+    public void addOrderImplementation(Order order) throws IOException {
+        validateOrder(order);
+        writeOrderToCsv(order);
+    }
+
+    private void validateOrder(Order order) {
         try {
             orderLimitPolicyService.validateOrderLimit(order);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Order limit validation failed: " + e.getMessage(), e);
         }
+    }
 
-        // Step 2: Write to CSV
-        try {
-            boolean fileExists = Files.exists(csv_orders_path) && Files.size(csv_orders_path) > 0;
+    private void writeOrderToCsv(Order order) throws IOException {
+        boolean fileExists = Files.exists(csvOrdersPath) && Files.size(csvOrdersPath) > 0;
 
-            try (FileWriter writer = new FileWriter(String.valueOf(csv_orders_path), true)) {
-                if (!fileExists) {
-                    writer.append("orderId,phoneId,phoneName,branchId,branchName,quantity,orderDate\n");
-                }
-
-                writer.append(order.getOrderId().getOrderId()).append(",");
-                writer.append(order.getPhoneID().getPhoneID()).append(",");
-                writer.append(order.getPhoneName().getName()).append(",");
-                writer.append(order.getBranchID().getBranchID()).append(",");
-                writer.append(order.getBranchName().getName()).append(",");
-                writer.append(String.valueOf(order.getQuantity().getQuantity())).append(",");
-                writer.append(order.getOrderDate().getOrderDate()).append("\n");
+        try (FileWriter writer = new FileWriter(String.valueOf(csvOrdersPath), true)) {
+            if (!fileExists) {
+                writer.append("orderId,phoneId,phoneName,branchId,branchName,quantity,orderDate\n");
             }
 
+            writer.append(order.getOrderId().getOrderId()).append(",");
+            writer.append(order.getPhoneID().getPhoneID()).append(",");
+            writer.append(order.getPhoneName().getName()).append(",");
+            writer.append(order.getBranchID().getBranchID()).append(",");
+            writer.append(order.getBranchName().getName()).append(",");
+            writer.append(String.valueOf(order.getQuantity().getQuantity())).append(",");
+            writer.append(order.getOrderDate().getOrderDate()).append("\n");
         } catch (IOException e) {
             throw new IOException("Error writing order to CSV file", e);
         }

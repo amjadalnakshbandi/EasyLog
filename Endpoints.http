@@ -62,7 +62,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMTIzNTcwOCJ9.v5S172lN0H3N
 
 {
   "phoneId": "P106",
-  "branchId": "B000",
+  "branchId": "B010",
   "phoneName": "IPhone 15 pro max",
   "branchName": "Filiale Kalrsruhe-Mitte",
   "quantity": 100

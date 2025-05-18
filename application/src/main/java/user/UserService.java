@@ -17,37 +17,6 @@ public class UserService {
     Path csv_users_path = Paths.get(constants.CSV_USER_PATH);
     Path csv_login_path = Paths.get(constants.CSV_Login_PATH);
 
-    public boolean isValidAdminToken(String token) {
-        try (BufferedReader reader = new BufferedReader(new FileReader(String.valueOf(csv_login_path)))) {
-            String line;
-            reader.readLine(); // skip header
-
-            while ((line = reader.readLine()) != null) {
-                String[] columns = line.split(",");
-                if (columns.length >= 6) {
-                    String tokenFromCsv = columns[5].trim();
-                    String role = columns[4].trim().toLowerCase();
-
-                    if (tokenFromCsv.equals(token) && role.equals("admin")) {
-                        return true;
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace(); // Consider logging properly
-        }
-
-        return false;
-    }
-
-    public Role parseRole(String role) {
-        if (role == null) throw new IllegalArgumentException("Role is required");
-        return switch (role.trim().toLowerCase()) {
-            case "admin" -> Role.ADMIN;
-            case "employee", "mitarbeiter" -> Role.MITARBEITER;
-            default -> throw new IllegalArgumentException("Invalid role: " + role);
-        };
-    }
 
     public void addUserImplementation(User user) throws IOException {
         try {
@@ -208,6 +177,8 @@ public class UserService {
         return employeesList;
     }
 
+
+
     private List<String> getUpdateLines(User user) throws IOException {
         List<String> updatedLines = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(String.valueOf(csv_login_path)))) {
@@ -243,5 +214,41 @@ public class UserService {
         Employees employee = new Employees();
         employee.setUser(user);
         return employee;
+    }
+
+    public boolean isValidAdminToken(String token) throws IOException {
+        if (token == null || token.trim().isEmpty()) {
+            throw new IllegalArgumentException("Token must not be null or empty");
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(String.valueOf(csv_login_path)))) {
+            String line;
+            reader.readLine(); // skip header
+
+            while ((line = reader.readLine()) != null) {
+                String[] columns = line.split(",");
+                if (columns.length >= 6) {
+                    String tokenFromCsv = columns[5].trim();
+                    String role = columns[4].trim().toLowerCase();
+
+                    if (tokenFromCsv.equals(token) && role.equals("admin")) {
+                        return true;
+                    }
+                }
+            }
+
+            return false; // token not found or role isn't admin
+        } catch (IOException e) {
+            throw new IOException("Error by read the login CSV", e);
+        }
+    }
+
+    public Role parseRole(String role) {
+        if (role == null) throw new IllegalArgumentException("Role is required");
+        return switch (role.trim().toLowerCase()) {
+            case "admin" -> Role.ADMIN;
+            case "employee", "mitarbeiter" -> Role.MITARBEITER;
+            default -> throw new IllegalArgumentException("Invalid role: " + role);
+        };
     }
 }
