@@ -1,5 +1,6 @@
 package order;
 
+import constants.constants;
 import order.entity.Order;
 import order.service.OrderLimitPolicyService;
 
@@ -11,7 +12,8 @@ import java.nio.file.Paths;
 
 public class OrderService {
 
-    private static final String CSV_ORDERS = "Data/orders.csv";
+    Path csv_orders_path = Paths.get(constants.CSV_Orders_PATH);
+
     private final OrderLimitPolicyService orderLimitPolicyService = new OrderLimitPolicyService();
 
     public void addOrderImplementation(Order order) {
@@ -20,10 +22,10 @@ public class OrderService {
 
         // Step 2: Write to CSV if valid
         try {
-            Path csvOrdersPath = Paths.get(CSV_ORDERS);
+            Path csvOrdersPath =csv_orders_path;
             boolean fileExists = Files.exists(csvOrdersPath) && Files.size(csvOrdersPath) > 0;
 
-            FileWriter writer = new FileWriter(CSV_ORDERS, true); // append mode
+            FileWriter writer = new FileWriter(String.valueOf(csv_orders_path), true); // append mode
 
             if (!fileExists) {
                 // Write CSV header

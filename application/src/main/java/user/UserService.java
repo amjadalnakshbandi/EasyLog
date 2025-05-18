@@ -1,26 +1,29 @@
 package user;
+import constants.constants;
 import user.aggregate.Employees;
 import user.entity.User;
 import user.valueObject.Role;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserService {
 
-    String csv_users = "Data/users.csv";
-    String csv_login = "Data/logins.csv";
+
+    Path csv_users_path = Paths.get(constants.CSV_USER_PATH);
+    Path csv_login_path = Paths.get(constants.CSV_Login_PATH);
 
     public void addUserImplementation(User user) {
 
        try {
             // Check if file exists and has content
-            boolean fileExists = Files.exists(Paths.get(csv_users)) && Files.size(Paths.get(csv_users)) > 0;
+           boolean fileExists = Files.exists(csv_users_path) && Files.size(csv_users_path) > 0;
 
-            FileWriter writer = new FileWriter(csv_users, true); // append mode
+            FileWriter writer = new FileWriter(String.valueOf(csv_users_path), true); // append mode
 
             if (!fileExists) {
                 // Write header
@@ -52,7 +55,7 @@ public class UserService {
         boolean credentialsMatch = false;
 
         // Step 1: Verify user credentials from users.csv
-        try (BufferedReader reader = new BufferedReader(new FileReader(csv_users))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(String.valueOf(csv_users_path)))) {
             String line;
             reader.readLine(); // skip header
 
@@ -86,10 +89,10 @@ public class UserService {
         // Step 2: Read existing login entries from logins.csv
         List<String> updatedLines = new ArrayList<>();
         boolean loginExists = false;
-        boolean loginFileExists = Files.exists(Paths.get(csv_login));
+        boolean loginFileExists = Files.exists(csv_login_path);
 
         if (loginFileExists) {
-            try (BufferedReader reader = new BufferedReader(new FileReader(csv_login))) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(String.valueOf(csv_login_path)))) {
                 String header = reader.readLine();
                 updatedLines.add(header); // retain header
 
@@ -127,7 +130,7 @@ public class UserService {
         }
 
         // Step 4: Write back to logins.csv
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(csv_login, false))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(String.valueOf(csv_login_path), false))) {
             for (String updatedLine : updatedLines) {
                 writer.write(updatedLine);
                 writer.newLine();
@@ -137,14 +140,14 @@ public class UserService {
     }
     public void logoutUserImplementation(User user) {
         try {
-            File loginFile = new File(csv_login);
+            File loginFile = new File(String.valueOf(csv_login_path));
             if (!loginFile.exists()) {
                 System.err.println("⚠️ Login file does not exist.");
                 return;
             }
 
             List<String> updatedLines = new ArrayList<>();
-            try (BufferedReader reader = new BufferedReader(new FileReader(csv_login))) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(String.valueOf(csv_login_path)))) {
                 String header = reader.readLine();
                 if (header != null) {
                     updatedLines.add(header); // Keep the header
@@ -163,7 +166,7 @@ public class UserService {
             }
 
             // Write the updated lines back to the file
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(csv_login, false))) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(String.valueOf(csv_login_path), false))) {
                 for (String updatedLine : updatedLines) {
                     writer.write(updatedLine);
                     writer.newLine();
@@ -176,12 +179,10 @@ public class UserService {
             System.err.println("❌ Error during logout: " + e.getMessage());
         }
     }
-
-
     public List<Employees> getAllEmployeeImplementation() {
         List<Employees> employeesList = new ArrayList<>();
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(csv_users))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(String.valueOf(csv_users_path)))) {
             reader.readLine(); // Skip header
 
             String line;
