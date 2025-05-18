@@ -1,16 +1,19 @@
 package order.service;
 
+import constants.constants;
 import order.entity.Order;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public class OrderLimitPolicyService {
 
-    private static final String CSV_FILE = "Data/orders.csv";
+    Path csv_orders_path = Paths.get(constants.CSV_Orders_PATH);
     private static final int DAILY_LIMIT = 100;
 
     public void validateOrderLimit(Order order) {
@@ -19,7 +22,7 @@ public class OrderLimitPolicyService {
         String branchId = order.getBranchID().getBranchID();
         int requestedQuantity = order.getQuantity().getQuantity();
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(CSV_FILE))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(String.valueOf(csv_orders_path)))) {
             String line = reader.readLine(); // skip header
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
