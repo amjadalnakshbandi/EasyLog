@@ -18,7 +18,26 @@ public class UserService {
     Path csv_login_path = Paths.get(constants.CSV_Login_PATH);
 
     public boolean isValidAdminToken(String token) {
-        return constants.SUPER_ADMIN_TOKEN.equals(token);
+        try (BufferedReader reader = new BufferedReader(new FileReader(String.valueOf(csv_login_path)))) {
+            String line;
+            reader.readLine(); // skip header
+
+            while ((line = reader.readLine()) != null) {
+                String[] columns = line.split(",");
+                if (columns.length >= 6) {
+                    String tokenFromCsv = columns[5].trim();
+                    String role = columns[4].trim().toLowerCase();
+
+                    if (tokenFromCsv.equals(token) && role.equals("admin")) {
+                        return true;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace(); // Consider logging properly
+        }
+
+        return false;
     }
 
     public Role parseRole(String role) {

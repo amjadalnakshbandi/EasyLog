@@ -1,13 +1,13 @@
 ### Benutzerregistrierung (Administrator)
 POST http://localhost:8080/api/users
 Content-Type: application/json
-Authorization: Bearer ASE
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0NDFhMjYzMSJ9.uO164LzAoUbOrokn_VLih-OruPPCp9jJyaqdE0gaRK0
 
 {
-  "firstName": "Lukas",
-  "lastName": "William",
-  "email": "Lukas.William@ASE.de",
-  "password": "Lukas_William_!5",
+  "firstName": "Moritz",
+  "lastName": "Due",
+  "email": "Moritz.Due@ASE.de",
+  "password": "Moritz!5",
   "role": "Mitarbeiter"
 }
 
@@ -31,8 +31,8 @@ POST http://localhost:8080/api/users/login
 Content-Type: application/json
 
 {
-  "email": "Lukas.William@ASE.de",
-  "password": "Lukas_William_!5"
+  "email": "Nour.Due@ASE.de",
+  "password": "Nour_Due_!5"
 }
 
 ###{
@@ -50,8 +50,8 @@ POST http://localhost:8080/api/users/logout
 Content-Type: application/json
 
 {
-  "email": "Jan.Toll@ASE.de",
-  "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlZWU3NTRmZCJ9.ncN1DuDI41vKC8fuBpk_BhlaOXprh144zdEmCXOrwg4"
+  "email": "Nour.Due@ASE.de",
+  "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0NDFhMjYzMSJ9.uO164LzAoUbOrokn_VLih-OruPPCp9jJyaqdE0gaRK0"
 }
 
 
@@ -85,7 +85,6 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMTIzNTcwOCJ9.v5S172lN0H3N
 # Benutzerliste abrufen
 GET http://localhost:8080/api/users
 Authorization: Bearer ASE
-
 
 ##{
 #  "status": "success",
