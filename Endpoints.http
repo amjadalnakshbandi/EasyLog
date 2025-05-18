@@ -1,29 +1,15 @@
 ### Benutzerregistrierung (Administrator)
 POST http://localhost:8080/api/users
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0NDFhMjYzMSJ9.uO164LzAoUbOrokn_VLih-OruPPCp9jJyaqdE0gaRK0
+Authorization: Bearer ASE
 
 {
-  "firstName": "Moritz",
-  "lastName": "Due",
-  "email": "Moritz.Due@ASE.de",
-  "password": "Moritz!5",
-  "role": "Mitarbeiter"
+  "firstName": "Nour",
+  "lastName": "Dour",
+  "email": "Nour.Dour@ASE.de",
+  "password": "Dou!5",
+  "role": "Admin"
 }
-
-###
-#{
-#  "status": "success",
-#  "message": "Benutzerkonto erfolgreich erstellt",
-#  "data": {
-#    "firstName": "Amjad",
-#    "lastName": "Alnakshbandi",
-#    "email": "Amjad.Alnakshbandi@ASE.de",
-#    "password": "Amjad_Alnakshbandi_ase_1!",
-#    "role": "admin",
-#    "token": null
-#  }
-#}
 
 
 ### Mitarbeiter einloggen
@@ -31,80 +17,35 @@ POST http://localhost:8080/api/users/login
 Content-Type: application/json
 
 {
-  "email": "Nour.Due@ASE.de",
-  "password": "Nour_Due_!5"
-}
-
-###{
-#    "status": "success",
-#    "message": "Login erfolgreich",
-#    "data": {
-#        "email": "Amjad.Alnakshbandi@ASE.de",
-#        "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0YTA5YWQ4ZSJ9.NooFtNGz9AbIDgTg_xj2U5uKK-WWGJ_BIjn2wuqpYm0"
-#    }
-#}
-
-
-### Mitarbeiter ausloggen
-POST http://localhost:8080/api/users/logout
-Content-Type: application/json
-
-{
-  "email": "Nour.Due@ASE.de",
-  "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0NDFhMjYzMSJ9.uO164LzAoUbOrokn_VLih-OruPPCp9jJyaqdE0gaRK0"
+  "email": "Nour.Dour@ASE.de",
+  "password": "Dourssq!#5"
 }
 
 
 ### Handybestellung entgegennehmen
 POST http://localhost:8080/api/orders
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMTIzNTcwOCJ9.v5S172lN0H3NnJ02YVYPiZ_8Iu_yQOkjv71mu5D1XYI
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiNDY5ZWMwYyJ9.UulnJkPQ0NnCXwsBTCmxGZVi7EIZd5c19S-Jiq3EmQM
 
 {
-  "phoneId": "P106",
-  "branchId": "B010",
+  "phoneId": "P126",
+  "branchId": "B210",
   "phoneName": "IPhone 15 pro max",
-  "branchName": "Filiale Kalrsruhe-Mitte",
-  "quantity": 100
+  "branchName": "Filiale Kalrsruhe-Süd",
+  "quantity": 12
 }
 
-###{
-#  "status": "success",
-#  "message": "Bestellung erfolgreich erstellt",
-#  "data": {
-#    "orderId": "O001",
-#    "phoneId": "P123",
-#    "phoneName": "Smartphone XYZ",
-#    "branchId": "B789",
-#    "branchName": "Filiale Berlin-Mitte",
-#    "quantity": 5,
-#    "orderDate": "2025-05-17 10:38:42"
-#  }
-#}
+### Mitarbeiter ausloggen
+POST http://localhost:8080/api/users/logout
+Content-Type: application/json
 
-# Benutzerliste abrufen
+{
+  "email": "Nour.Dour@ASE.de",
+  "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiNDY5ZWMwYyJ9.UulnJkPQ0NnCXwsBTCmxGZVi7EIZd5c19S-Jiq3EmQM"
+}
+
+
+
+### Benutzerliste abrufen
 GET http://localhost:8080/api/users
 Authorization: Bearer ASE
-
-##{
-#  "status": "success",
-#  "message": "Benutzer erfolgreich geladen",
-#  "data": [
-#    {
-#      "firstName": "Amjad",
-#      "lastName": "Alnakshbandi",
-#      "email": "Amjad.Alnakshbandi@ASE.de",
-#      "password": "Amjad_Alnakshbandi_ase_1!",
-#      "role": "admin",
-#      "token": null
-#    },
-#    {
-#      "firstName": "Jan",
-#      "lastName": "Toll",
-#      "email": "Jan.Toll@ASE.de",
-#      "password": "Jan_Toll_ase_1!",
-#      "role": "mitarbeiter",
-#      "token": null
-#    }
-#  ]
-#}

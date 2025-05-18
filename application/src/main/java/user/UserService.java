@@ -221,6 +221,11 @@ public class UserService {
             throw new IllegalArgumentException("Token must not be null or empty");
         }
 
+        // Check if the token matches the SUPER ADMIN token
+        if (token.equals(constants.SUPER_ADMIN_TOKEN)) {
+            return true;
+        }
+
         try (BufferedReader reader = new BufferedReader(new FileReader(String.valueOf(csv_login_path)))) {
             String line;
             reader.readLine(); // skip header
@@ -242,6 +247,7 @@ public class UserService {
             throw new IOException("Error by read the login CSV", e);
         }
     }
+
 
     public Role parseRole(String role) {
         if (role == null) throw new IllegalArgumentException("Role is required");

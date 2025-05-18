@@ -143,26 +143,27 @@ Content-Type: application/json
 Authorization: Bearer {admin_token}
 
 {
-  "firstName": "Max",
-  "lastName": "Mustermann",
-  "email": "max.mustermann@beispiel.de",
-  "password": "sicheres_passwort123",
-  "role": "admin"
+  "firstName": "Nour",
+  "lastName": "Dour",
+  "email": "Nour.Dour@ASE.de",
+  "password": "Dourssq!#5",
+  "role": "Admin"
 }
+
         </pre>
         <h3>Response (Erfolg)</h3>
         <pre>
-HTTP/1.1 201 Created
+HTTP/1.1 201
 {
   "status": "success",
   "message": "Benutzerkonto erfolgreich erstellt",
-  "userId": "12345",
-  "userDetails": {
-    "firstName": "Max",
-    "lastName": "Mustermann",
-    "password": "sicheres_passwort123",
-    "email": "max.mustermann@beispiel.de",
-    "role": "admin"
+  "data": {
+    "firstName": "Nour",
+    "lastName": "Dour",
+    "email": "Nour.Dour@ASE.de",
+    "password": "Dourssq!#5",
+    "role": "admin",
+    "token": null
   }
 }
         </pre>
@@ -171,7 +172,8 @@ HTTP/1.1 201 Created
 HTTP/1.1 400 Bad Request
 {
   "status": "error",
-  "message": "E-Mail-Adresse bereits vergeben"
+  "message": "Password does not meet the required format",
+  "errorCode": "Internal Server Error"
 }
         </pre>
     </section>
@@ -183,8 +185,8 @@ POST /api/auth/login
 Content-Type: application/json
 
 {
-  "email": "mitarbeiter@beispiel.de",
-  "password": "mitarbeiter_passwort"
+  "email": "Nour.Dour@ASE.de",
+  "password": "Dourssq!#5"
 }
         </pre>
         <h3>Response (Erfolg)</h3>
@@ -194,8 +196,8 @@ HTTP/1.1 200 OK
   "status": "success",
   "message": "Login erfolgreich",
   "data": {
-    "email": "Amjad.Alnakshbandi@ASE.de",
-    "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzMDE4YTA5MiJ9.cl8O7sWxmHw1xDBs0CJxP6nXpFG-zI3TfZBApeftnkw"
+    "email": "Nour.Dour@ASE.de",
+    "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0OGY0NWVjNiJ9.O7tCGBPcv8k-Mn6LWg_yiuDPQoew51v0hG2mNjpJMKs"
   }
 }
         </pre>
@@ -216,8 +218,8 @@ POST /api/users/logout
 Content-Type: application/json
 
 {
-  "email": "Amjad.Alnakshbandi@ASE.de",
-  "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzMDE4YTA5MiJ9.cl8O7sWxmHw1xDBs0CJxP6nXpFG-zI3TfZBApeftnkw"
+  "email": "Nour.Dour@ASE.de",
+  "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiNDY5ZWMwYyJ9.UulnJkPQ0NnCXwsBTCmxGZVi7EIZd5c19S-Jiq3EmQM"
 }
         </pre>
         <h3>Response (Erfolg)</h3>
@@ -255,11 +257,11 @@ Content-Type: application/json
 Authorization: Bearer {employee_token}
 
 {
-  "phoneId": "P12345",
-  "branchId": "B789",
-  "phoneName": "Smartphone XYZ",
-  "branchName": "Filiale Berlin-Mitte",
-  "quantity": 5
+  "phoneId": "P126",
+  "branchId": "B210",
+  "phoneName": "IPhone 15 pro max",
+  "branchName": "Filiale Kalrsruhe-Süd",
+  "quantity": 12
 }
         </pre>
         <h3>Response (Erfolg)</h3>
@@ -268,20 +270,21 @@ HTTP/1.1 201 Created
 {
   "status": "success",
   "message": "Bestellung erfolgreich erstellt",
-  "orderId": "O98765",
-  "orderDetails": {
-    "phoneId": "P12345",
-    "phoneName": "Smartphone XYZ",
-    "branchId": "B789",
-    "branchName": "Filiale Berlin-Mitte",
-    "quantity": 5,
-    "orderDate": "2025-04-10T10:30:00"
+  "data": {
+    "orderId": "O002",
+    "phoneId": "P126",
+    "phoneName": "IPhone 15 pro max",
+    "branchId": "B210",
+    "branchName": "Filiale Kalrsruhe-Süd",
+    "quantity": 12,
+    "orderDate": "2025-05-18 22:24:09"
   }
 }
+
         </pre>
     </section>
     <section>
-        <h2>5. Handys ins Lager einbuchen</h2>
+        <h2>5. Handys ins Lager einbuchen (Nicht Implementiert)</h2>
         <h3>Request</h3>
         <pre>
 POST /api/inventory/add
@@ -314,7 +317,7 @@ HTTP/1.1 200 OK
         </pre>
     </section>
     <section>
-        <h2>6. Lagerbestand anzeigen</h2>
+        <h2>6. Lagerbestand anzeigen (Nicht Implementiert)</h2>
         <h3>Request</h3>
         <pre>
 GET /api/inventory
@@ -339,7 +342,7 @@ HTTP/1.1 200 OK
         </pre>
     </section>
     <section>
-        <h2>7. Neue Filiale hinzufügen</h2>
+        <h2>7. Neue Filiale hinzufügen (Nicht Implementiert)</h2>
         <h3>Request</h3>
         <pre>
 POST /api/branches
@@ -381,21 +384,55 @@ HTTP/1.1 201 Created
         <h2>8. Mitarbeiter listen</h2>
         <h3>Request</h3>
         <pre>
-GET /api/users?role=employee
-Authorization: Bearer {admin_token}
+GET http://localhost:8080/api/users
+Authorization: Bearer ASE
         </pre>
         <h3>Response</h3>
         <pre>
 HTTP/1.1 200 OK
 {
   "status": "success",
-  "employees": [
+  "message": "Benutzer erfolgreich geladen",
+  "data": [
     {
-      "userId": "67890",
-      "firstName": "Anna",
-      "lastName": "Schmidt",
-      "email": "anna.schmidt@beispiel.de",
-      "role": "employee"
+      "firstName": "Amjad",
+      "lastName": "Alnakshbandi",
+      "email": "Amjad.Alnakshbandi@ASE.de",
+      "password": "Amjad_Alnakshbandi_ase_1!",
+      "role": "admin",
+      "token": null
+    },
+    {
+      "firstName": "Lukas",
+      "lastName": "William",
+      "email": "Lukas.William@ASE.de",
+      "password": "Lukas_William_!5",
+      "role": "mitarbeiter",
+      "token": null
+    },
+    {
+      "firstName": "Nour",
+      "lastName": "Due",
+      "email": "Nour.Due@ASE.de",
+      "password": "Nour_Due_!5",
+      "role": "admin",
+      "token": null
+    },
+    {
+      "firstName": "Moritz",
+      "lastName": "Due",
+      "email": "Moritz.Due@ASE.de",
+      "password": "Moritz!5",
+      "role": "mitarbeiter",
+      "token": null
+    },
+    {
+      "firstName": "Moritz",
+      "lastName": "Due",
+      "email": "Moritz.Due@ASE.de",
+      "password": "Moritz!5",
+      "role": "mitarbeiter",
+      "token": null
     }
   ]
 }
