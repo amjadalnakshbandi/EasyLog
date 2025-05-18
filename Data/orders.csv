@@ -2,3 +2,4 @@ orderId, phoneId, phoneName, branchId, branchName, quantity,orderDate
 O001,P123,Smartphone XYZ,B789,Filiale Berlin-Mitte,5,2025-05-17 11:07:15
 O001,P123,Smartphone XYZ,B789,Filiale Berlin-Mitte,5,2025-05-17 16:05:35
 O002,P126,IPhone 15 pro max,B789,Filiale Berlin-Mitte,120,2025-05-17 16:06:19
+O002,P106,IPhone 15 pro max,B000,Filiale Kalrsruhe-Mitte,100,2025-05-18 11:53:29

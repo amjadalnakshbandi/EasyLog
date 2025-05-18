@@ -13,6 +13,7 @@ import user.UserDto;
 import user.aggregate.Employees;
 import user.entity.User;
 import user.valueObject.*;
+import user.UserService;
 
 import java.io.IOException;
 import java.util.List;
@@ -22,32 +23,32 @@ import java.util.List;
 public class UserController {
 
     private final UserRepositoryBridge userRepositoryBridge;
+    private final UserService userService;
 
     @Autowired
-    public UserController(UserRepositoryBridge userRepositoryBridge) {
+    public UserController(UserRepositoryBridge userRepositoryBridge, UserService userService) {
         this.userRepositoryBridge = userRepositoryBridge;
+        this.userService = userService;
     }
 
-    // 🧾 Add User (Registration)
     @PostMapping
     public ResponseEntity<? extends ApiResponse> addUser(
             @RequestHeader(value = "Authorization", required = false) String authHeader,
             @RequestBody UserDto dto) {
         try {
-            // Validate Authorization header
             if (authHeader == null || !authHeader.startsWith("Bearer ")) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body(new ErrorResponse("Fehlender oder ungültiger Authorization-Header", "Unauthorized"));
             }
 
-            String tokenValue = authHeader.substring(7); // Strip "Bearer "
+            String tokenValue = authHeader.substring(7);
 
-            if (!isValidAdminToken(tokenValue)) {
+            if (!userService.isValidAdminToken(tokenValue)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body(new ErrorResponse("Token ist nicht berechtigt, Benutzer zu erstellen", "Forbidden"));
             }
 
-            Role role = parseRole(dto.getRole());
+            Role role = userService.parseRole(dto.getRole());
 
             User user = new User(
                     new UserID(),
@@ -61,7 +62,6 @@ public class UserController {
 
             userRepositoryBridge.addUser(user);
 
-            // Construct response DTO
             UserDto responseDto = new UserDto(
                     user.getFirstName().getFirstName(),
                     user.getLastName().getLastname(),
@@ -69,7 +69,6 @@ public class UserController {
                     user.getPassword().getPassword(),
                     user.getRole().toString()
             );
-
 
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new SuccessResponse<>("Benutzerkonto erfolgreich erstellt", responseDto));
@@ -83,7 +82,6 @@ public class UserController {
         }
     }
 
-    // 🔐 Login User
     @PostMapping("/login")
     public ResponseEntity<? extends ApiResponse> loginUser(@RequestBody UserDto loginDto) {
         try {
@@ -93,9 +91,8 @@ public class UserController {
                     new Token()
             );
 
-            userRepositoryBridge.loginUser(user); // populates token etc.
+            userRepositoryBridge.loginUser(user);
 
-            // ✅ Build response with just email + token
             LoginResponse response = new LoginResponse(
                     user.getEmail().getEmail(),
                     user.getToken().getToken()
@@ -113,7 +110,6 @@ public class UserController {
         }
     }
 
-    // 🚪 Logout User
     @PostMapping("/logout")
     public ResponseEntity<? extends ApiResponse> logoutUser(@RequestBody UserDto logoutDto) {
         try {
@@ -138,14 +134,19 @@ public class UserController {
         }
     }
 
-
-    // 📋 Get all employees and admins
     @GetMapping
-    public ResponseEntity<? extends ApiResponse> getAllUsers() {
+    public ResponseEntity<? extends ApiResponse> getAllUsers(
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
         try {
-            List<Employees> employees = userRepositoryBridge.getAllEmployee();
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(new ErrorResponse("Fehlender oder ungültiger Authorization-Header", "Unauthorized"));
+            }
 
-            // Map to DTOs
+            String token = authHeader.substring(7); // remove "Bearer "
+
+            List<Employees> employees = userRepositoryBridge.getAllEmployee(new Token(token)); // Pass token
+
             List<UserDto> userDtos = employees.stream()
                     .map(emp -> {
                         User user = emp.getUser();
@@ -159,27 +160,15 @@ public class UserController {
                     })
                     .toList();
 
-            return ResponseEntity.ok(
-                    new SuccessResponse<>("Benutzer erfolgreich geladen", userDtos)
-            );
+            return ResponseEntity.ok(new SuccessResponse<>("Benutzer erfolgreich geladen", userDtos));
 
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new ErrorResponse(e.getMessage(), "Access Denied"));
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorResponse(e.getMessage(), "Internal Server Error"));
         }
     }
 
-
-    private Role parseRole(String role) {
-        if (role == null) throw new IllegalArgumentException("Role is required");
-        return switch (role.trim().toLowerCase()) {
-            case "admin" -> Role.ADMIN;
-            case "employee", "mitarbeiter" -> Role.MITARBEITER;
-            default -> throw new IllegalArgumentException("Invalid role: " + role);
-        };
-    }
-
-    private boolean isValidAdminToken(String token) {
-        return "ASE".equals(token); // Super admin token
-    }
 }

@@ -4,6 +4,7 @@ import com.example.plugin.persistence.order.OrderRepositoryBridge;
 import com.example.plugin.persistence.user.UserRepositoryBridge;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import user.UserService;
 
 @Configuration
 public class AppConfig {
@@ -14,4 +15,9 @@ public class AppConfig {
 
     @Bean
     public OrderRepositoryBridge orderRepositoryBridge() {return new OrderRepositoryBridge();}
+
+    @Bean
+    public UserService userService() {
+        return new UserService();
+    }
 }

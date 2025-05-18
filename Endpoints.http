@@ -4,10 +4,10 @@ Content-Type: application/json
 Authorization: Bearer ASE
 
 {
-  "firstName": "Jan",
-  "lastName": "Toll",
-  "email": "Jan.Toll@ASE.de",
-  "password": "Jan_Toll_ase_1!",
+  "firstName": "Lukas",
+  "lastName": "William",
+  "email": "Lukas.William@ASE.de",
+  "password": "Lukas_William_!5",
   "role": "Mitarbeiter"
 }
 
@@ -31,8 +31,8 @@ POST http://localhost:8080/api/users/login
 Content-Type: application/json
 
 {
-  "email": "Jan.Toll@ASE.de",
-  "password": "Jan_Toll_ase_1!"
+  "email": "Lukas.William@ASE.de",
+  "password": "Lukas_William_!5"
 }
 
 ###{
@@ -58,14 +58,14 @@ Content-Type: application/json
 ### Handybestellung entgegennehmen
 POST http://localhost:8080/api/orders
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjMWYxNWI3MCJ9.JnoIc1BWCnreT_73f2qWbmUJtmF9437_T0jCsxB1Tyc
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMTIzNTcwOCJ9.v5S172lN0H3NnJ02YVYPiZ_8Iu_yQOkjv71mu5D1XYI
 
 {
-  "phoneId": "P126",
-  "branchId": "B789",
+  "phoneId": "P106",
+  "branchId": "B000",
   "phoneName": "IPhone 15 pro max",
-  "branchName": "Filiale Berlin-Mitte",
-  "quantity": 120
+  "branchName": "Filiale Kalrsruhe-Mitte",
+  "quantity": 100
 }
 
 ###{

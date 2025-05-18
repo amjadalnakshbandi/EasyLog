@@ -14,4 +14,6 @@ public class constants {
     public static final String CSV_USER_PATH = "Data/users.csv";
     public static final String CSV_Login_PATH = "Data/logins.csv";
     public static final String CSV_Orders_PATH = "Data/orders.csv";
+    public static final String SUPER_ADMIN_TOKEN = "ASE";
+
 }

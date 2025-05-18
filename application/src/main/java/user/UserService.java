@@ -17,34 +17,38 @@ public class UserService {
     Path csv_users_path = Paths.get(constants.CSV_USER_PATH);
     Path csv_login_path = Paths.get(constants.CSV_Login_PATH);
 
+    public boolean isValidAdminToken(String token) {
+        return constants.SUPER_ADMIN_TOKEN.equals(token);
+    }
+
+    public Role parseRole(String role) {
+        if (role == null) throw new IllegalArgumentException("Role is required");
+        return switch (role.trim().toLowerCase()) {
+            case "admin" -> Role.ADMIN;
+            case "employee", "mitarbeiter" -> Role.MITARBEITER;
+            default -> throw new IllegalArgumentException("Invalid role: " + role);
+        };
+    }
+
     public void addUserImplementation(User user) {
-
         try {
-            // Check if file exists and has content
             boolean fileExists = Files.exists(csv_users_path) && Files.size(csv_users_path) > 0;
-
-            FileWriter writer = new FileWriter(String.valueOf(csv_users_path), true); // append mode
-
+            FileWriter writer = new FileWriter(String.valueOf(csv_users_path), true);
             if (!fileExists) {
-                // Write header
                 writer.append("UserID,firstName,lastName,email,password,role\n");
             }
-
-            // Write user data
             writer.append(String.valueOf(user.getUserID().getId())).append(",");
             writer.append(user.getFirstName().getFirstName()).append(",");
             writer.append(user.getLastName().getLastname()).append(",");
             writer.append(user.getEmail().getEmail()).append(",");
             writer.append(user.getPassword().getPassword()).append(",");
             writer.append(user.getRole().toString()).append("\n");
-
             writer.close();
-
-            //System.out.println("User added to CSV successfully: " + user.toString());
         } catch (IOException e) {
             System.err.println("Error saving user to CSV: " + e.getMessage());
         }
     }
+
     public void loginUserImplementation(User user) throws IOException {
         // System.out.println("📥 Received login request for: " + user.getEmail().getEmail());
 
@@ -162,7 +166,11 @@ public class UserService {
             System.err.println("❌ Error during logout: " + e.getMessage());
         }
     }
-    public List<Employees> getAllEmployeeImplementation() {
+    public List<Employees> getAllEmployeeImplementation(String token) {
+        if (!constants.SUPER_ADMIN_TOKEN.equals(token)) {
+            throw new SecurityException("Access denied: Only SuperAdmin can view all users.");
+        }
+
         List<Employees> employeesList = new ArrayList<>();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(String.valueOf(csv_users_path)))) {
@@ -171,7 +179,7 @@ public class UserService {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] data = line.split(",");
-                if (data.length < 6) continue; // Skip invalid lines
+                if (data.length < 6) continue;
 
                 String roleStr = data[5].trim().toUpperCase();
 
@@ -195,6 +203,7 @@ public class UserService {
 
         return employeesList;
     }
+
     private List<String> getUpdateLines(User user) throws IOException {
         List<String> updatedLines = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(String.valueOf(csv_login_path)))) {
@@ -230,6 +239,5 @@ public class UserService {
         employee.setUser(user);
         return employee;
     }
-
 
 }
