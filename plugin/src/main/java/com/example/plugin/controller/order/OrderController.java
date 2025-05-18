@@ -14,9 +14,11 @@ import response.ErrorResponse;
 import response.SuccessResponse;
 
 import java.io.IOException;
+
 @RestController
 @RequestMapping("/api/orders")
 public class OrderController {
+
     private final OrderRepositoryBridge orderRepositoryBridge;
 
     @Autowired
@@ -24,7 +26,6 @@ public class OrderController {
         this.orderRepositoryBridge = orderRepositoryBridge;
     }
 
-    // 🧾 Add Order
     @PostMapping
     public ResponseEntity<? extends ApiResponse> addOrder(
             @RequestHeader(value = "Authorization", required = false) String authHeader,
@@ -32,11 +33,9 @@ public class OrderController {
 
         try {
             if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(new ErrorResponse("Fehlender oder ungültiger Authorization-Header", "Unauthorized"));
+                throw new SecurityException("Fehlender oder ungültiger Authorization-Header");
             }
 
-            // 🧱 Build Order — ID and date auto-generated
             Order order = new Order.Builder()
                     .phoneID(new PhoneID(dto.getPhoneId()))
                     .phoneName(new PhoneName(dto.getPhoneName()))
@@ -45,11 +44,9 @@ public class OrderController {
                     .quantity(new Quantity(dto.getQuantity()))
                     .build();
 
-            // 💾 Save
             orderRepositoryBridge.addOrder(order);
 
-            // 📦 Create response payload from built order
-            OrderResponse orderDetails = new OrderResponse(
+            OrderResponse response = new OrderResponse(
                     order.getOrderId().getOrderId(),
                     order.getPhoneID().getPhoneID(),
                     order.getPhoneName().getName(),
@@ -60,19 +57,17 @@ public class OrderController {
             );
 
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(new SuccessResponse<>("Bestellung erfolgreich erstellt", orderDetails));
+                    .body(new SuccessResponse<>("Bestellung erfolgreich erstellt", response));
 
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ErrorResponse(e.getMessage(), "Authentication Failed"));
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorResponse(e.getMessage(), "Internal Server Error"));
-        } catch (IllegalArgumentException e) {
+        } catch (SecurityException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ErrorResponse(e.getMessage(), "Validation Error"));
-        }
-        catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ErrorResponse(e.getMessage(), " Exceeds daily quantity limit"));
+                    .body(new ErrorResponse(e.getMessage(), "Security Error"));
         }
     }
-
 }
