@@ -146,24 +146,7 @@ public class UserService {
                 return;
             }
 
-            List<String> updatedLines = new ArrayList<>();
-            try (BufferedReader reader = new BufferedReader(new FileReader(String.valueOf(csv_login_path)))) {
-                String header = reader.readLine();
-                if (header != null) {
-                    updatedLines.add(header); // Keep the header
-                }
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    String[] loginData = line.split(",");
-                    if (loginData.length >= 4) {
-                        String existingEmail = loginData[3].trim();
-                        if (!existingEmail.equals(user.getEmail().getEmail())) {
-                            updatedLines.add(line); // Keep other users
-                        }
-                    }
-                }
-            }
+            List<String> updatedLines = getUpdateLines(user);
 
             // Write the updated lines back to the file
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(String.valueOf(csv_login_path), false))) {
@@ -202,17 +185,7 @@ public class UserService {
 
                 if (role != Role.ADMIN && role != Role.MITARBEITER) continue;
 
-                User user = new User(
-                        new user.valueObject.UserID(data[0].trim()),
-                        new user.valueObject.FirstName(data[1].trim()),
-                        new user.valueObject.LastName(data[2].trim()),
-                        new user.valueObject.Password(data[4].trim()),
-                        new user.valueObject.Email(data[3].trim()),
-                        role
-                );
-
-                Employees employee = new Employees();
-                employee.setUser(user);
+                Employees employee = getEmployees(data, role);
                 employeesList.add(employee);
             }
 
@@ -221,6 +194,41 @@ public class UserService {
         }
 
         return employeesList;
+    }
+    private List<String> getUpdateLines(User user) throws IOException {
+        List<String> updatedLines = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(String.valueOf(csv_login_path)))) {
+            String header = reader.readLine();
+            if (header != null) {
+                updatedLines.add(header); // Keep the header
+            }
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] loginData = line.split(",");
+                if (loginData.length >= 4) {
+                    String existingEmail = loginData[3].trim();
+                    if (!existingEmail.equals(user.getEmail().getEmail())) {
+                        updatedLines.add(line); // Keep other users
+                    }
+                }
+            }
+        }
+        return updatedLines;
+    }
+    private static Employees getEmployees(String[] data, Role role) throws IOException {
+        User user = new User(
+                new user.valueObject.UserID(data[0].trim()),
+                new user.valueObject.FirstName(data[1].trim()),
+                new user.valueObject.LastName(data[2].trim()),
+                new user.valueObject.Password(data[4].trim()),
+                new user.valueObject.Email(data[3].trim()),
+                role
+        );
+
+        Employees employee = new Employees();
+        employee.setUser(user);
+        return employee;
     }
 
 
