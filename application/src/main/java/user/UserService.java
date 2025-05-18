@@ -1,4 +1,5 @@
 package user;
+
 import constants.constants;
 import user.aggregate.Employees;
 import user.entity.User;
@@ -12,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserService {
-
 
     Path csv_users_path = Paths.get(constants.CSV_USER_PATH);
     Path csv_login_path = Paths.get(constants.CSV_Login_PATH);
@@ -30,39 +30,35 @@ public class UserService {
         };
     }
 
-    public void addUserImplementation(User user) {
+    public void addUserImplementation(User user) throws IOException {
         try {
             boolean fileExists = Files.exists(csv_users_path) && Files.size(csv_users_path) > 0;
-            FileWriter writer = new FileWriter(String.valueOf(csv_users_path), true);
-            if (!fileExists) {
-                writer.append("UserID,firstName,lastName,email,password,role\n");
+            try (FileWriter writer = new FileWriter(String.valueOf(csv_users_path), true)) {
+                if (!fileExists) {
+                    writer.append("UserID,firstName,lastName,email,password,role\n");
+                }
+                writer.append(String.valueOf(user.getUserID().getId())).append(",");
+                writer.append(user.getFirstName().getFirstName()).append(",");
+                writer.append(user.getLastName().getLastname()).append(",");
+                writer.append(user.getEmail().getEmail()).append(",");
+                writer.append(user.getPassword().getPassword()).append(",");
+                writer.append(user.getRole().toString()).append("\n");
             }
-            writer.append(String.valueOf(user.getUserID().getId())).append(",");
-            writer.append(user.getFirstName().getFirstName()).append(",");
-            writer.append(user.getLastName().getLastname()).append(",");
-            writer.append(user.getEmail().getEmail()).append(",");
-            writer.append(user.getPassword().getPassword()).append(",");
-            writer.append(user.getRole().toString()).append("\n");
-            writer.close();
         } catch (IOException e) {
-            System.err.println("Error saving user to CSV: " + e.getMessage());
+            throw new IOException("Error saving user to CSV", e);
         }
     }
 
     public void loginUserImplementation(User user) throws IOException {
-        // System.out.println("📥 Received login request for: " + user.getEmail().getEmail());
-
         String userId = null;
         String firstName = null;
         String lastName = null;
         String role = null;
         boolean credentialsMatch = false;
 
-        // Step 1: Verify user credentials from users.csv
         try (BufferedReader reader = new BufferedReader(new FileReader(String.valueOf(csv_users_path)))) {
+            reader.readLine(); // Skip header
             String line;
-            reader.readLine(); // skip header
-
             while ((line = reader.readLine()) != null) {
                 String[] userData = line.split(",");
                 if (userData.length >= 6) {
@@ -87,10 +83,9 @@ public class UserService {
         }
 
         if (user.getToken() == null || user.getToken().getToken() == null) {
-            System.err.println("⚠️ Token is null");
+            throw new IllegalArgumentException("Token is missing");
         }
 
-        // Step 2: Read existing login entries from logins.csv
         List<String> updatedLines = new ArrayList<>();
         boolean loginExists = false;
         boolean loginFileExists = Files.exists(csv_login_path);
@@ -98,61 +93,54 @@ public class UserService {
         if (loginFileExists) {
             try (BufferedReader reader = new BufferedReader(new FileReader(String.valueOf(csv_login_path)))) {
                 String header = reader.readLine();
-                updatedLines.add(header); // retain header
+                updatedLines.add(header);
 
                 String line;
                 while ((line = reader.readLine()) != null) {
                     String[] loginData = line.split(",");
                     if (loginData.length >= 5) {
                         String existingEmail = loginData[3].trim();
-
                         if (existingEmail.equals(user.getEmail().getEmail())) {
-                            // Replace with updated token
                             String newLine = String.join(",", userId, firstName, lastName,
                                     user.getEmail().getEmail(), role,
-                                    user.getToken() != null ? user.getToken().getToken() : "null");
+                                    user.getToken().getToken());
                             updatedLines.add(newLine);
                             loginExists = true;
                         } else {
-                            updatedLines.add(line); // keep other lines as-is
+                            updatedLines.add(line);
                         }
                     }
                 }
             }
         }
 
-        // Step 3: If login didn't exist, append new entry
         if (!loginExists) {
             if (!loginFileExists) {
                 updatedLines.add("userId,firstName,lastName,email,role,token");
             }
-
             String newEntry = String.join(",", userId, firstName, lastName,
                     user.getEmail().getEmail(), role,
-                    user.getToken() != null ? user.getToken().getToken() : "null");
+                    user.getToken().getToken());
             updatedLines.add(newEntry);
         }
 
-        // Step 4: Write back to logins.csv
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(String.valueOf(csv_login_path), false))) {
             for (String updatedLine : updatedLines) {
                 writer.write(updatedLine);
                 writer.newLine();
             }
         }
-
     }
+
     public void logoutUserImplementation(User user) {
         try {
             File loginFile = new File(String.valueOf(csv_login_path));
             if (!loginFile.exists()) {
-                System.err.println("⚠️ Login file does not exist.");
-                return;
+                throw new IOException("Login file does not exist.");
             }
 
             List<String> updatedLines = getUpdateLines(user);
 
-            // Write the updated lines back to the file
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(String.valueOf(csv_login_path), false))) {
                 for (String updatedLine : updatedLines) {
                     writer.write(updatedLine);
@@ -160,12 +148,11 @@ public class UserService {
                 }
             }
 
-            System.out.println("✅ User logged out successfully: " + user.getEmail().getEmail());
-
         } catch (IOException e) {
-            System.err.println("❌ Error during logout: " + e.getMessage());
+            throw new RuntimeException("Error during logout", e);
         }
     }
+
     public List<Employees> getAllEmployeeImplementation(String token) {
         if (!constants.SUPER_ADMIN_TOKEN.equals(token)) {
             throw new SecurityException("Access denied: Only SuperAdmin can view all users.");
@@ -175,7 +162,6 @@ public class UserService {
 
         try (BufferedReader reader = new BufferedReader(new FileReader(String.valueOf(csv_users_path)))) {
             reader.readLine(); // Skip header
-
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] data = line.split(",");
@@ -187,8 +173,7 @@ public class UserService {
                 try {
                     role = Role.valueOf(roleStr);
                 } catch (IllegalArgumentException e) {
-                    System.err.println("⚠️ Unknown role: " + roleStr);
-                    continue;
+                    continue; // Skip unknown roles
                 }
 
                 if (role != Role.ADMIN && role != Role.MITARBEITER) continue;
@@ -198,7 +183,7 @@ public class UserService {
             }
 
         } catch (IOException e) {
-            System.err.println("❌ Error reading users file: " + e.getMessage());
+            throw new RuntimeException("Error reading users file", e);
         }
 
         return employeesList;
@@ -209,7 +194,7 @@ public class UserService {
         try (BufferedReader reader = new BufferedReader(new FileReader(String.valueOf(csv_login_path)))) {
             String header = reader.readLine();
             if (header != null) {
-                updatedLines.add(header); // Keep the header
+                updatedLines.add(header);
             }
 
             String line;
@@ -218,13 +203,14 @@ public class UserService {
                 if (loginData.length >= 4) {
                     String existingEmail = loginData[3].trim();
                     if (!existingEmail.equals(user.getEmail().getEmail())) {
-                        updatedLines.add(line); // Keep other users
+                        updatedLines.add(line);
                     }
                 }
             }
         }
         return updatedLines;
     }
+
     private static Employees getEmployees(String[] data, Role role) throws IOException {
         User user = new User(
                 new user.valueObject.UserID(data[0].trim()),
@@ -239,5 +225,4 @@ public class UserService {
         employee.setUser(user);
         return employee;
     }
-
 }

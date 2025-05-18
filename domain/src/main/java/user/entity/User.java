@@ -21,11 +21,6 @@ public class User {
                 Role role,
                 Token token) {
 
-        if (userID == null || firstName == null || lastName == null ||
-                password == null || email == null || role == null || token == null) {
-            throw new IllegalArgumentException("All fields must be non-null");
-        }
-
         this.userID = userID;
         this.firstName = firstName;
         this.lastName = lastName;

@@ -79,6 +79,9 @@ public class UserController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ErrorResponse(e.getMessage(), "Validation Error"));
+        }catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse(e.getMessage(), "Security Error"));
         }
     }
 
@@ -107,6 +110,9 @@ public class UserController {
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorResponse(e.getMessage(), "Internal Server Error"));
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse(e.getMessage(), "Security Error"));
         }
     }
 
@@ -128,9 +134,15 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new SuccessResponse<>("Logout erfolgreich", null));
 
+        }  catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ErrorResponse(e.getMessage(), "Authentication Failed"));
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorResponse(e.getMessage(), "Internal Server Error"));
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse(e.getMessage(), "Security Error"));
         }
     }
 
@@ -162,12 +174,15 @@ public class UserController {
 
             return ResponseEntity.ok(new SuccessResponse<>("Benutzer erfolgreich geladen", userDtos));
 
-        } catch (SecurityException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(new ErrorResponse(e.getMessage(), "Access Denied"));
+        }  catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ErrorResponse(e.getMessage(), "Authentication Failed"));
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorResponse(e.getMessage(), "Internal Server Error"));
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse(e.getMessage(), "Security Error"));
         }
     }
 
