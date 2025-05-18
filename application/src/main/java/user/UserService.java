@@ -19,9 +19,9 @@ public class UserService {
 
     public void addUserImplementation(User user) {
 
-       try {
+        try {
             // Check if file exists and has content
-           boolean fileExists = Files.exists(csv_users_path) && Files.size(csv_users_path) > 0;
+            boolean fileExists = Files.exists(csv_users_path) && Files.size(csv_users_path) > 0;
 
             FileWriter writer = new FileWriter(String.valueOf(csv_users_path), true); // append mode
 
@@ -46,7 +46,7 @@ public class UserService {
         }
     }
     public void loginUserImplementation(User user) throws IOException {
-       // System.out.println("📥 Received login request for: " + user.getEmail().getEmail());
+        // System.out.println("📥 Received login request for: " + user.getEmail().getEmail());
 
         String userId = null;
         String firstName = null;
@@ -146,7 +146,24 @@ public class UserService {
                 return;
             }
 
-            List<String> updatedLines = getUpdatedLines(user);
+            List<String> updatedLines = new ArrayList<>();
+            try (BufferedReader reader = new BufferedReader(new FileReader(String.valueOf(csv_login_path)))) {
+                String header = reader.readLine();
+                if (header != null) {
+                    updatedLines.add(header); // Keep the header
+                }
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    String[] loginData = line.split(",");
+                    if (loginData.length >= 4) {
+                        String existingEmail = loginData[3].trim();
+                        if (!existingEmail.equals(user.getEmail().getEmail())) {
+                            updatedLines.add(line); // Keep other users
+                        }
+                    }
+                }
+            }
 
             // Write the updated lines back to the file
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(String.valueOf(csv_login_path), false))) {
@@ -162,8 +179,6 @@ public class UserService {
             System.err.println("❌ Error during logout: " + e.getMessage());
         }
     }
-
-
     public List<Employees> getAllEmployeeImplementation() {
         List<Employees> employeesList = new ArrayList<>();
 
@@ -187,7 +202,17 @@ public class UserService {
 
                 if (role != Role.ADMIN && role != Role.MITARBEITER) continue;
 
-                Employees employee = getEmployees(data, role);
+                User user = new User(
+                        new user.valueObject.UserID(data[0].trim()),
+                        new user.valueObject.FirstName(data[1].trim()),
+                        new user.valueObject.LastName(data[2].trim()),
+                        new user.valueObject.Password(data[4].trim()),
+                        new user.valueObject.Email(data[3].trim()),
+                        role
+                );
+
+                Employees employee = new Employees();
+                employee.setUser(user);
                 employeesList.add(employee);
             }
 
@@ -198,41 +223,5 @@ public class UserService {
         return employeesList;
     }
 
-    private static Employees getEmployees(String[] data, Role role) throws IOException {
-        User user = new User(
-                new user.valueObject.UserID(data[0].trim()),
-                new user.valueObject.FirstName(data[1].trim()),
-                new user.valueObject.LastName(data[2].trim()),
-                new user.valueObject.Password(data[4].trim()),
-                new user.valueObject.Email(data[3].trim()),
-                role
-        );
-
-        Employees employee = new Employees();
-        employee.setUser(user);
-        return employee;
-    }
-
-    private List<String> getUpdatedLines(User user) throws IOException {
-        List<String> updatedLines = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(String.valueOf(csv_login_path)))) {
-            String header = reader.readLine();
-            if (header != null) {
-                updatedLines.add(header); // Keep the header
-            }
-
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] loginData = line.split(",");
-                if (loginData.length >= 4) {
-                    String existingEmail = loginData[3].trim();
-                    if (!existingEmail.equals(user.getEmail().getEmail())) {
-                        updatedLines.add(line); // Keep other users
-                    }
-                }
-            }
-        }
-        return updatedLines;
-    }
 
 }
